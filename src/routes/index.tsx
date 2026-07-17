@@ -1,23 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "ZONIX — Secure Session Sharing Browser for Logistics" },
+      {
+        name: "description",
+        content:
+          "ZONIX is the secure, anti-detect, multi-tenant session sharing browser built for dispatchers and freight teams. Sync sessions, isolate proxies, defeat fingerprinting.",
+      },
+      { property: "og:title", content: "ZONIX — Session OS for Dispatch" },
+      {
+        property: "og:description",
+        content:
+          "Sync sessions. Secure tunnels. Empower your dispatch. Built for Windows 10/11.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  useEffect(() => {
+    window.location.replace("/zonix.html");
+  }, []);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <div style={{ minHeight: "100vh", background: "#0b0f19" }}>
+      <iframe
+        src="/zonix.html"
+        title="ZONIX"
+        style={{ border: 0, width: "100vw", height: "100vh", display: "block" }}
       />
     </div>
   );
