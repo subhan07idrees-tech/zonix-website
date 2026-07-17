@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZONIX — Secure Session Sharing for Logistics</title>
+<meta name="description" content="ZONIX is the ultimate secure session-sharing, anti-detect browser for dispatchers and freight teams. Sync sessions, isolate proxies, defeat fingerprinting."/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+      },
+      colors: {
+        ink: '#0b0f19',
+        panel: '#0d0e12',
+        neon: '#3b82f6',
+        cyan: '#00F0FF',
+      },
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0b0f19;
+    color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  .font-display { font-family: 'Outfit', sans-serif; }
+
+  /* Background grid */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    background-position: -1px -1px;
+  }
+  .bg-radial-fade {
+    background:
+      radial-gradient(1000px 500px at 50% -10%, rgba(59,130,246,0.25), transparent 60%),
+      radial-gradient(700px 400px at 90% 10%, rgba(0,240,255,0.12), transparent 60%),
+      radial-gradient(600px 400px at 10% 30%, rgba(59,130,246,0.10), transparent 60%);
+  }
+
+  /* Glass */
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+  .glass-strong {
+    background: linear-gradient(180deg, rgba(13,14,18,0.75), rgba(13,14,18,0.55));
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  /* Neon */
+  .text-gradient {
+    background: linear-gradient(90deg, #ffffff 0%, #bcd1ff 40%, #00F0FF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .glow-blue { box-shadow: 0 0 0 1px rgba(59,130,246,0.35), 0 10px 40px -10px rgba(59,130,246,0.6); }
+  .glow-cyan { box-shadow: 0 0 0 1px rgba(0,240,255,0.35), 0 10px 40px -10px rgba(0,240,255,0.55); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #00F0FF 100%);
+    color: #0b0f19;
+    font-weight: 700;
+    transition: all .25s ease;
+    box-shadow: 0 8px 30px -8px rgba(59,130,246,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px -8px rgba(0,240,255,0.6), inset 0 1px 0 rgba(255,255,255,0.4); }
+
+  .btn-ghost {
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.03);
+    transition: all .25s ease;
+  }
+  .btn-ghost:hover { border-color: rgba(0,240,255,0.5); box-shadow: 0 0 0 1px rgba(0,240,255,0.25), 0 0 30px -10px rgba(0,240,255,0.5); color:#fff;}
+
+  /* Animations */
+  @keyframes floaty { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-8px);} }
+  .animate-floaty { animation: floaty 6s ease-in-out infinite; }
+  @keyframes pulseDot { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:.5; transform:scale(0.85);} }
+  .pulse-dot { animation: pulseDot 1.6s ease-in-out infinite; }
+  @keyframes barPulse { 0%,100% { opacity:.5;} 50% { opacity:1;} }
+  @keyframes shimmer { 0% { background-position: -400px 0;} 100% { background-position: 400px 0;} }
+  .shimmer {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(59,130,246,0.25) 50%, rgba(255,255,255,0.03) 100%);
+    background-size: 800px 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+  @keyframes scan {
+    0% { transform: translateY(-100%);}
+    100% { transform: translateY(1000%);}
+  }
+  .scanline::after {
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:2px;
+    background: linear-gradient(90deg, transparent, rgba(0,240,255,0.7), transparent);
+    animation: scan 3s linear infinite;
+  }
+
+  /* Accordion */
+  details[open] > summary .chev { transform: rotate(180deg); }
+  summary::-webkit-details-marker { display: none; }
+
+  /* Chart bars */
+  .lat-bar {
+    background: linear-gradient(180deg, #00F0FF, #3b82f6);
+    border-radius: 3px 3px 0 0;
+    animation: barPulse 2.4s ease-in-out infinite;
+  }
+
+  /* Card hover */
+  .feature-card { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+  .feature-card:hover { transform: translateY(-4px); border-color: rgba(0,240,255,0.4); box-shadow: 0 20px 40px -20px rgba(0,240,255,0.35); }
+
+  .divider-glow {
+    height:1px;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.6), transparent);
+  }
+
+  .tab-btn.active { background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(0,240,255,0.15)); border-color: rgba(0,240,255,0.5); color:#fff; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; animation: fadeUp .4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform: translateY(0);} }
+
+  /* Mock browser */
+  .dot { width:10px; height:10px; border-radius:9999px; display:inline-block; }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- NAV -->
+<header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
+    <div class="glass-strong rounded-2xl flex items-center justify-between px-4 sm:px-6 py-3">
+      <a href="#top" class="flex items-center gap-2.5">
+        <img src="/zonix-logo.png" alt="ZONIX logo" class="w-9 h-9 rounded-xl object-cover" style="box-shadow:0 0 0 1px rgba(59,130,246,0.35), 0 6px 24px -6px rgba(59,130,246,0.55);" />
+        <div>
+          <div class="font-display font-extrabold tracking-tight text-lg leading-none">ZONIX</div>
+          <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 leading-none mt-0.5">Session OS</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <a href="#how" class="hover:text-white transition">How it works</a>
+        <a href="#security" class="hover:text-white transition">Security</a>
+        <a href="#diagnostics" class="hover:text-white transition">Diagnostics</a>
+        <a href="#faq" class="hover:text-white transition">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs text-gray-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span> v1.5.0
+        </span>
+        <a href="#download" class="btn-primary rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Download App
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top" class="relative pt-36 pb-24 lg:pt-44 lg:pb-32 overflow-hidden">
+  <div class="absolute inset-0 bg-grid opacity-60"></div>
+  <div class="absolute inset-0 bg-radial-fade"></div>
+  <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs text-gray-300 mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan pulse-dot"></span>
+          Built for dispatch. Trusted by fleets.
+        </div>
+        <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight">
+          Sync Sessions.<br>
+          <span class="text-gradient">Secure Tunnels.</span><br>
+          Empower Your Dispatch.
+        </h1>
+        <p class="mt-6 text-lg text-gray-400 max-w-xl leading-relaxed">
+          The ultimate secure session-sharing browser for modern logistics teams. Log in once as Admin; your dispatchers gain instant, authenticated access to DAT, Truckstop, 123 Loadboard, and carrier sites — without credential leaks or login blocks.
+        </p>
+        <div id="download" class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.5.0/ZONIX-Dispatcher-Setup-1.5.0.exe" class="btn-primary rounded-xl px-5 py-3.5 inline-flex items-center gap-2.5">
+            <i data-lucide="monitor-down" class="w-5 h-5"></i>
+            Download App (v1.5.0)
+          </a>
+          <a href="https://wa.me/14046101615?text=Hello%2C%20I'm%20interested%20in%20getting%20access%20to%20ZONIX!" target="_blank" class="rounded-xl px-5 py-3.5 inline-flex items-center gap-2.5 text-white font-semibold transition" style="background:#128c7e; box-shadow:0 8px 24px -6px rgba(18,140,126,0.6);">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+            Contact to Get Access
+          </a>
+        </div>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-gray-400">
+          <div class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan"></i> Windows 10/11 x64</div>
+          <div class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-cyan"></i> AES-256 vault</div>
+          <div class="flex items-center gap-2"><i data-lucide="network" class="w-4 h-4 text-cyan"></i> Per-tab proxy isolation</div>
+        </div>
+      </div>
+
+      <!-- Mock dashboard -->
+      <div class="lg:col-span-6 animate-floaty">
+        <div class="relative">
+          <div class="absolute -inset-6 rounded-3xl" style="background:radial-gradient(400px 200px at 50% 40%, rgba(0,240,255,0.25), transparent 70%);"></div>
+          <div class="relative glass-strong rounded-2xl overflow-hidden shadow-2xl">
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-white/5">
+              <span class="dot" style="background:#ff5f57"></span>
+              <span class="dot" style="background:#febc2e"></span>
+              <span class="dot" style="background:#28c840"></span>
+              <div class="flex-1 mx-4">
+                <div class="glass rounded-md text-[11px] text-gray-400 px-3 py-1.5 flex items-center gap-2">
+                  <i data-lucide="lock" class="w-3 h-3 text-cyan"></i>
+                  zonix://dispatcher/session/DAT_LOADS
+                </div>
+              </div>
+              <span class="text-[10px] text-emerald-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>SYNCED</span>
+            </div>
+            <div class="grid grid-cols-3 divide-x divide-white/5">
+              <div class="col-span-1 p-4 space-y-2 bg-black/20">
+                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-2">Sessions</div>
+                <div class="glass rounded-lg p-2.5 border-l-2 border-cyan flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center"><i data-lucide="truck" class="w-3.5 h-3.5 text-cyan"></i></div>
+                  <div class="text-xs">DAT One <div class="text-[9px] text-emerald-400">Active</div></div>
+                </div>
+                <div class="glass rounded-lg p-2.5 flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-300"></i></div>
+                  <div class="text-xs">Truckstop <div class="text-[9px] text-gray-400">Synced</div></div>
+                </div>
+                <div class="glass rounded-lg p-2.5 flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center"><i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-orange-300"></i></div>
+                  <div class="text-xs">123 Loadboard <div class="text-[9px] text-gray-400">Synced</div></div>
+                </div>
+                <div class="glass rounded-lg p-2.5 flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-cyan-500/20 flex items-center justify-center"><i data-lucide="ship" class="w-3.5 h-3.5 text-cyan"></i></div>
+                  <div class="text-xs">Carrier411 <div class="text-[9px] text-gray-400">Synced</div></div>
+                </div>
+              </div>
+              <div class="col-span-2 p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] uppercase tracking-widest text-gray-500">Loadboard · DAT One</div>
+                    <div class="font-display text-base font-semibold">Available Loads · Chicago → Dallas</div>
+                  </div>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full glass text-cyan">Proxy · ORD-04</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="glass rounded-md p-2.5 flex items-center justify-between text-xs">
+                    <div><div class="font-semibold text-white">$2,850 · 48ft Van</div><div class="text-[10px] text-gray-500">Broker Verified · 4.8★</div></div>
+                    <span class="text-[10px] text-emerald-400">MATCH</span>
+                  </div>
+                  <div class="glass rounded-md p-2.5 flex items-center justify-between text-xs">
+                    <div><div class="font-semibold text-white">$3,120 · Reefer</div><div class="text-[10px] text-gray-500">925 mi · Deadhead 40mi</div></div>
+                    <span class="text-[10px] text-gray-400">NEW</span>
+                  </div>
+                  <div class="glass rounded-md p-2.5 flex items-center justify-between text-xs">
+                    <div><div class="font-semibold text-white">$2,610 · Flatbed</div><div class="text-[10px] text-gray-500">Pickup 09:30 CT</div></div>
+                    <span class="text-[10px] text-gray-400">NEW</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 pt-1">
+                  <div class="glass rounded-md p-2"><div class="text-[9px] text-gray-500 uppercase">Cookies</div><div class="text-sm font-semibold text-cyan">1,284</div></div>
+                  <div class="glass rounded-md p-2"><div class="text-[9px] text-gray-500 uppercase">Latency</div><div class="text-sm font-semibold text-white">42ms</div></div>
+                  <div class="glass rounded-md p-2"><div class="text-[9px] text-gray-500 uppercase">Tunnel</div><div class="text-sm font-semibold text-emerald-400">OK</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating badges -->
+          <div class="absolute -left-4 top-16 glass rounded-xl px-3 py-2 text-xs flex items-center gap-2 shadow-xl glow-cyan hidden sm:flex">
+            <i data-lucide="fingerprint" class="w-4 h-4 text-cyan"></i>
+            Fingerprint spoofed
+          </div>
+          <div class="absolute -right-4 bottom-16 glass rounded-xl px-3 py-2 text-xs flex items-center gap-2 shadow-xl glow-blue hidden sm:flex">
+            <i data-lucide="shield" class="w-4 h-4 text-blue-400"></i>
+            Kill switch armed
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee stats -->
+    <div class="mt-20 glass rounded-2xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div><div class="font-display text-3xl font-bold text-white" data-counter data-target="12480">0</div><div class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Sessions Synced</div></div>
+      <div><div class="font-display text-3xl font-bold text-white" data-counter data-target="99.98" data-decimals="2">0</div><div class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Uptime %</div></div>
+      <div><div class="font-display text-3xl font-bold text-white" data-counter data-target="340">0</div><div class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Fleets Onboard</div></div>
+      <div><div class="font-display text-3xl font-bold text-white" data-counter data-target="0" data-target-final="0">0</div><div class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Credential Leaks</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl">
+      <div class="text-cyan text-xs uppercase tracking-[0.25em] mb-3">How it works</div>
+      <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">One admin login. <span class="text-gradient">Entire team, in sync.</span></h2>
+      <p class="mt-4 text-gray-400">ZONIX splits your workflow into two secure roles — Admin captures the session once, Dispatchers inherit authenticated access instantly, with zero visibility into raw credentials.</p>
+    </div>
+
+    <div class="mt-10 flex flex-wrap gap-2">
+      <button class="tab-btn active glass rounded-xl px-4 py-2.5 text-sm flex items-center gap-2" data-tab="admin">
+        <i data-lucide="user-cog" class="w-4 h-4"></i> Admin · Capture the Session
+      </button>
+      <button class="tab-btn glass rounded-xl px-4 py-2.5 text-sm flex items-center gap-2" data-tab="dispatcher">
+        <i data-lucide="users" class="w-4 h-4"></i> Dispatcher · Load Instantly
+      </button>
+    </div>
+
+    <div class="mt-8">
+      <!-- ADMIN -->
+      <div class="tab-panel active" data-panel="admin">
+        <div class="grid md:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">01</div>
+            <div class="w-10 h-10 rounded-lg bg-blue-500/15 flex items-center justify-center mb-4"><i data-lucide="log-in" class="w-5 h-5 text-blue-400"></i></div>
+            <div class="font-semibold text-white">Login once</div>
+            <p class="text-sm text-gray-400 mt-1">Admin authenticates DAT, Truckstop, 123 Loadboard and carrier portals inside the secure ZONIX shell.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">02</div>
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/15 flex items-center justify-center mb-4"><i data-lucide="cookie" class="w-5 h-5 text-cyan"></i></div>
+            <div class="font-semibold text-white">Capture cookies & storage</div>
+            <p class="text-sm text-gray-400 mt-1">Session cookies, localStorage tokens and CSRF handles are captured in a sealed vault.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">03</div>
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center mb-4"><i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i></div>
+            <div class="font-semibold text-white">Encrypt & sign</div>
+            <p class="text-sm text-gray-400 mt-1">Payload is AES-256 encrypted and cryptographically signed before leaving the machine.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">04</div>
+            <div class="w-10 h-10 rounded-lg bg-indigo-500/15 flex items-center justify-center mb-4"><i data-lucide="cloud-upload" class="w-5 h-5 text-indigo-300"></i></div>
+            <div class="font-semibold text-white">Publish to registry</div>
+            <p class="text-sm text-gray-400 mt-1">Sealed session hits the ZONIX registry — dispatchers get instant access, credentials never do.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 glass rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-xs uppercase tracking-widest text-gray-500">Session vault preview</div>
+            <div class="text-[10px] px-2 py-0.5 rounded-full glass text-emerald-400">signed · aes-256-gcm</div>
+          </div>
+          <pre class="text-xs text-gray-300 font-mono overflow-x-auto leading-relaxed"><span class="text-cyan">{</span>
+  <span class="text-blue-400">"platform"</span>: <span class="text-emerald-300">"dat.com"</span>,
+  <span class="text-blue-400">"cookies"</span>: <span class="text-emerald-300">[ 42 entries ]</span>,
+  <span class="text-blue-400">"localStorage"</span>: <span class="text-emerald-300">{ 18 keys }</span>,
+  <span class="text-blue-400">"fingerprint"</span>: <span class="text-emerald-300">"virtualized-A7F2"</span>,
+  <span class="text-blue-400">"proxy"</span>: <span class="text-emerald-300">"pool://us-central/dispatch-04"</span>,
+  <span class="text-blue-400">"expires"</span>: <span class="text-emerald-300">"2026-07-24T18:00Z"</span>
+<span class="text-cyan">}</span></pre>
+        </div>
+      </div>
+
+      <!-- DISPATCHER -->
+      <div class="tab-panel" data-panel="dispatcher">
+        <div class="grid md:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">01</div>
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/15 flex items-center justify-center mb-4"><i data-lucide="app-window" class="w-5 h-5 text-cyan"></i></div>
+            <div class="font-semibold text-white">Launch ZONIX</div>
+            <p class="text-sm text-gray-400 mt-1">Dispatcher opens the browser — no logins, no passwords, no prompts.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">02</div>
+            <div class="w-10 h-10 rounded-lg bg-blue-500/15 flex items-center justify-center mb-4"><i data-lucide="download-cloud" class="w-5 h-5 text-blue-400"></i></div>
+            <div class="font-semibold text-white">Session inherits</div>
+            <p class="text-sm text-gray-400 mt-1">Sealed vault is pulled and mounted into the isolated tab environment.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">03</div>
+            <div class="w-10 h-10 rounded-lg bg-fuchsia-500/15 flex items-center justify-center mb-4"><i data-lucide="fingerprint" class="w-5 h-5 text-fuchsia-300"></i></div>
+            <div class="font-semibold text-white">Fingerprint locks</div>
+            <p class="text-sm text-gray-400 mt-1">Canvas, WebGL, audio and timezone match Admin's captured device signature exactly.</p>
+          </div>
+          <div class="glass rounded-2xl p-5 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-600 font-mono">04</div>
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center mb-4"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i></div>
+            <div class="font-semibold text-white">Dispatch in seconds</div>
+            <p class="text-sm text-gray-400 mt-1">Fully logged-in DAT, Truckstop, 123 Loadboard — ready to book loads. Zero friction.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 glass rounded-2xl p-6 relative overflow-hidden scanline">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-gray-500">Dispatcher terminal</div>
+              <div class="font-display text-lg font-semibold mt-1">Session mounted in <span class="text-cyan">1.24s</span></div>
+            </div>
+            <div class="text-[10px] px-2 py-0.5 rounded-full glass text-emerald-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>LIVE</div>
+          </div>
+          <div class="mt-4 grid sm:grid-cols-3 gap-3 text-xs">
+            <div class="glass rounded-lg p-3"><div class="text-gray-500 text-[10px] uppercase">Bound proxy</div><div class="text-white mt-1 font-mono">us-central · ORD-04</div></div>
+            <div class="glass rounded-lg p-3"><div class="text-gray-500 text-[10px] uppercase">Fingerprint</div><div class="text-white mt-1 font-mono">A7F2 · matched</div></div>
+            <div class="glass rounded-lg p-3"><div class="text-gray-500 text-[10px] uppercase">Kill switch</div><div class="text-emerald-400 mt-1 font-mono">armed</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-glow max-w-7xl mx-auto"></div>
+
+<!-- SECURITY -->
+<section id="security" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+      <div class="max-w-2xl">
+        <div class="text-cyan text-xs uppercase tracking-[0.25em] mb-3">Core security & virtualization</div>
+        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">Invisible to trackers. <span class="text-gradient">Identical across dispatchers.</span></h2>
+      </div>
+      <p class="text-gray-400 md:max-w-md">Every tab runs inside a virtualized browser identity — same fingerprint the admin captured, isolated proxy per session, and hard kill switches to prevent leaks.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Cards -->
+      <div class="feature-card glass rounded-2xl p-6">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(0,240,255,.15));">
+          <i data-lucide="scan-face" class="w-5 h-5 text-cyan"></i>
+        </div>
+        <h3 class="font-semibold text-white">Canvas Spoofing</h3>
+        <p class="text-sm text-gray-400 mt-2">Per-session noise injection defeats HTML5 canvas fingerprinting without breaking rendering.</p>
+        <div class="mt-4 flex items-center gap-2 text-[11px] text-gray-500">
+          <span class="px-2 py-0.5 rounded-full glass">deterministic</span>
+          <span class="px-2 py-0.5 rounded-full glass">reversible</span>
+        </div>
+      </div>
+      <div class="feature-card glass rounded-2xl p-6">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(0,240,255,.15));">
+          <i data-lucide="network" class="w-5 h-5 text-cyan"></i>
+        </div>
+        <h3 class="font-semibold text-white">Proxy Isolation</h3>
+        <p class="text-sm text-gray-400 mt-2">Every dispatcher tab is pinned to its own residential or datacenter proxy pool with sticky IPs.</p>
+        <div class="mt-4 flex items-center gap-2 text-[11px] text-gray-500">
+          <span class="px-2 py-0.5 rounded-full glass">per-tab</span>
+          <span class="px-2 py-0.5 rounded-full glass">geo-locked</span>
+        </div>
+      </div>
+      <div class="feature-card glass rounded-2xl p-6">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(0,240,255,.15));">
+          <i data-lucide="box" class="w-5 h-5 text-cyan"></i>
+        </div>
+        <h3 class="font-semibold text-white">WebGL & Audio Masking</h3>
+        <p class="text-sm text-gray-400 mt-2">GPU renderer, WebGL params, AudioContext and battery API return admin-matched values.</p>
+        <div class="mt-4 flex items-center gap-2 text-[11px] text-gray-500">
+          <span class="px-2 py-0.5 rounded-full glass">GPU-safe</span>
+          <span class="px-2 py-0.5 rounded-full glass">audio</span>
+        </div>
+      </div>
+      <div class="feature-card glass rounded-2xl p-6">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style="background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(0,240,255,.15));">
+          <i data-lucide="shield-off" class="w-5 h-5 text-cyan"></i>
+        </div>
+        <h3 class="font-semibold text-white">DNS Leak Prevention</h3>
+        <p class="text-sm text-gray-400 mt-2">DNS resolves inside the tunnel. On outage, kill switch cuts traffic — never your ISP address.</p>
+        <div class="mt-4 flex items-center gap-2 text-[11px] text-gray-500">
+          <span class="px-2 py-0.5 rounded-full glass">DoH</span>
+          <span class="px-2 py-0.5 rounded-full glass">kill-switch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGNOSTICS -->
+<section id="diagnostics" class="relative py-24">
+  <div class="absolute inset-0 bg-grid opacity-30"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-5">
+        <div class="text-cyan text-xs uppercase tracking-[0.25em] mb-3">Active Registry Diagnostics</div>
+        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">Every session. <span class="text-gradient">Under a microscope.</span></h2>
+        <p class="mt-5 text-gray-400">The ZONIX control panel gives admins live visibility into every dispatcher tab — cookie counts, proxy health, latency and fingerprint drift, in one command surface.</p>
+        <ul class="mt-6 space-y-3 text-sm">
+          <li class="flex items-start gap-3"><i data-lucide="activity" class="w-5 h-5 text-cyan mt-0.5"></i><span class="text-gray-300">Real-time latency & throughput per proxy edge</span></li>
+          <li class="flex items-start gap-3"><i data-lucide="database" class="w-5 h-5 text-cyan mt-0.5"></i><span class="text-gray-300">Cookie inventory & expiry timeline for every synced site</span></li>
+          <li class="flex items-start gap-3"><i data-lucide="siren" class="w-5 h-5 text-cyan mt-0.5"></i><span class="text-gray-300">Instant alerts on fingerprint drift or tunnel disconnect</span></li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-7">
+        <div class="glass-strong rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full" style="background:radial-gradient(circle,rgba(0,240,255,0.25),transparent 70%);"></div>
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-gray-500">Session Diagnostics</div>
+              <div class="font-display text-xl font-semibold mt-1">Registry: <span class="text-cyan">dispatch-fleet-04</span></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] px-2 py-1 rounded-full glass text-emerald-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>ACTIVE</span>
+              <span class="text-[10px] px-2 py-1 rounded-full glass text-cyan flex items-center gap-1.5"><i data-lucide="link" class="w-3 h-3"></i>SYNCED</span>
+            </div>
+          </div>
+
+          <!-- Metric row -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="glass rounded-xl p-4">
+              <div class="text-[10px] text-gray-500 uppercase tracking-wider">Cookies synced</div>
+              <div class="font-display text-2xl font-bold text-white mt-1" id="mCookies">0</div>
+              <div class="text-[10px] text-emerald-400 mt-1">↑ 12 last min</div>
+            </div>
+            <div class="glass rounded-xl p-4">
+              <div class="text-[10px] text-gray-500 uppercase tracking-wider">Active proxies</div>
+              <div class="font-display text-2xl font-bold text-white mt-1" id="mProxies">0</div>
+              <div class="text-[10px] text-cyan mt-1">6 pools · US/EU</div>
+            </div>
+            <div class="glass rounded-xl p-4">
+              <div class="text-[10px] text-gray-500 uppercase tracking-wider">Avg latency</div>
+              <div class="font-display text-2xl font-bold text-white mt-1"><span id="mLatency">0</span><span class="text-sm text-gray-400 font-medium">ms</span></div>
+              <div class="text-[10px] text-emerald-400 mt-1">healthy</div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div class="glass rounded-xl p-4 mt-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xs text-gray-400 uppercase tracking-widest">Proxy latency · 60s</div>
+              <div class="text-[10px] text-gray-500">ms</div>
+            </div>
+            <div class="flex items-end gap-1 h-28" id="latencyChart"></div>
+          </div>
+
+          <!-- Sessions list -->
+          <div class="mt-4 space-y-2">
+            <div class="glass rounded-lg p-3 flex items-center justify-between text-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center"><i data-lucide="truck" class="w-4 h-4 text-blue-400"></i></div>
+                <div>
+                  <div class="text-white font-medium">DAT One</div>
+                  <div class="text-[10px] text-gray-500">Dispatcher · Maya K.</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] text-gray-400 font-mono">42ms</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full glass text-emerald-400">ACTIVE</span>
+              </div>
+            </div>
+            <div class="glass rounded-lg p-3 flex items-center justify-between text-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center"><i data-lucide="message-circle" class="w-4 h-4 text-indigo-300"></i></div>
+                <div>
+                  <div class="text-white font-medium">Discord Ops</div>
+                  <div class="text-[10px] text-gray-500">Dispatcher · Rafael O.</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] text-gray-400 font-mono">58ms</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full glass text-cyan">SYNCED</span>
+              </div>
+            </div>
+            <div class="glass rounded-lg p-3 flex items-center justify-between text-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4 text-orange-300"></i></div>
+                <div>
+                  <div class="text-white font-medium">Zoho CRM</div>
+                  <div class="text-[10px] text-gray-500">Dispatcher · Anya P.</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] text-gray-400 font-mono">71ms</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full glass text-emerald-400">ACTIVE</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 h-1 rounded-full overflow-hidden bg-white/5">
+            <div class="h-full shimmer w-1/2"></div>
+          </div>
+          <div class="mt-2 text-[10px] text-gray-500 flex items-center justify-between">
+            <span>Tunnel throughput</span><span id="mThroughput" class="text-cyan font-mono">0 Mbps</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="relative py-24">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <div class="text-cyan text-xs uppercase tracking-[0.25em] mb-3">FAQ</div>
+      <h2 class="font-display text-4xl md:text-5xl font-bold">Answers, before you ask.</h2>
+    </div>
+    <div class="space-y-3">
+      <details class="glass rounded-xl p-5 group" open>
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-medium text-white">How does cookie sync work?</span>
+          <i data-lucide="chevron-down" class="chev w-4 h-4 text-gray-400 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-sm text-gray-400 leading-relaxed">The admin logs in through the ZONIX shell, which captures cookies, localStorage, and CSRF tokens into an AES-256 sealed vault. Dispatchers mount that vault into an isolated tab — no raw credentials ever touch their machine.</p>
+      </details>
+      <details class="glass rounded-xl p-5 group">
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-medium text-white">Is my password safe?</span>
+          <i data-lucide="chevron-down" class="chev w-4 h-4 text-gray-400 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-sm text-gray-400 leading-relaxed">Yes. Passwords never leave the admin device. Only signed session artifacts are transported, and they can be revoked from the registry with one click.</p>
+      </details>
+      <details class="glass rounded-xl p-5 group">
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-medium text-white">Do I have to open the admin browser daily?</span>
+          <i data-lucide="chevron-down" class="chev w-4 h-4 text-gray-400 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-sm text-gray-400 leading-relaxed">No. ZONIX auto-refreshes eligible sessions in the background and alerts you only when a platform requires a re-auth (e.g. after a password change).</p>
+      </details>
+      <details class="glass rounded-xl p-5 group">
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-medium text-white">Does it support DAT?</span>
+          <i data-lucide="chevron-down" class="chev w-4 h-4 text-gray-400 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-sm text-gray-400 leading-relaxed">Yes — DAT One and DAT Power are first-class. Discord, Zoho, Truckstop, Carrier411 and most broker portals are supported out of the box.</p>
+      </details>
+      <details class="glass rounded-xl p-5 group">
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-medium text-white">Will dispatchers get flagged for multi-login?</span>
+          <i data-lucide="chevron-down" class="chev w-4 h-4 text-gray-400 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-sm text-gray-400 leading-relaxed">The anti-detect engine mirrors the admin's fingerprint and pins each session to a consistent proxy. Platforms see one stable device, not a team of dispatchers.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="relative py-24">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative glass-strong rounded-3xl p-10 md:p-14 overflow-hidden text-center">
+      <div class="absolute inset-0 bg-grid opacity-20"></div>
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full" style="background:radial-gradient(circle,rgba(59,130,246,0.3),transparent 60%);"></div>
+      <div class="relative">
+        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">Ship your fleet a <span class="text-gradient">real dispatch OS.</span></h2>
+        <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Install ZONIX on any Windows machine in your office. Onboard dispatchers in minutes. Sleep knowing your credentials never leave your device.</p>
+        <div class="mt-8 flex flex-wrap gap-3 justify-center">
+          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.5.0/ZONIX-Dispatcher-Setup-1.5.0.exe" class="btn-primary rounded-xl px-6 py-3.5 inline-flex items-center gap-2.5">
+            <i data-lucide="monitor-down" class="w-5 h-5"></i> Download App (v1.5.0)
+          </a>
+          <a href="https://wa.me/14046101615?text=Hello%2C%20I'm%20interested%20in%20getting%20access%20to%20ZONIX!" target="_blank" class="rounded-xl px-6 py-3.5 inline-flex items-center gap-2.5 text-white font-semibold transition" style="background:#128c7e; box-shadow:0 8px 24px -6px rgba(18,140,126,0.6);">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+            Contact to Get Access
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="relative border-t border-white/5 pt-14 pb-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2.5">
+          <img src="/zonix-logo.png" alt="ZONIX logo" class="w-9 h-9 rounded-xl object-cover" style="box-shadow:0 0 0 1px rgba(59,130,246,0.35), 0 6px 24px -6px rgba(59,130,246,0.55);" />
+          <div>
+            <div class="font-display font-extrabold tracking-tight text-lg leading-none">ZONIX</div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 leading-none mt-0.5">Session OS for dispatch</div>
+          </div>
+        </div>
+        <p class="mt-5 text-sm text-gray-400 max-w-sm">Secure, multi-tenant session sharing and anti-detect browser system for logistics teams that refuse to leak credentials.</p>
+        <div class="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs text-gray-300">
+          <i data-lucide="monitor" class="w-3.5 h-3.5 text-cyan"></i>
+          Built for Windows 10 / 11 · x64
+        </div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-widest text-gray-500 mb-4">Product</div>
+        <ul class="space-y-2 text-sm text-gray-300">
+          <li><a href="#how" class="hover:text-cyan transition">How it works</a></li>
+          <li><a href="#security" class="hover:text-cyan transition">Security</a></li>
+          <li><a href="#diagnostics" class="hover:text-cyan transition">Diagnostics</a></li>
+          <li><a href="#download" class="hover:text-cyan transition">Download</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-widest text-gray-500 mb-4">Company</div>
+        <ul class="space-y-2 text-sm text-gray-300">
+          <li><a href="#" class="hover:text-cyan transition">Docs</a></li>
+          <li><a href="#" class="hover:text-cyan transition">Changelog</a></li>
+          <li><a href="#" class="hover:text-cyan transition">Support</a></li>
+          <li><a href="#" class="hover:text-cyan transition">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div>© 2026 ZONIX Systems. All rights reserved.</div>
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span> Systems operational</span>
+        <span class="font-mono">v1.5.0</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Icons
+  lucide.createIcons();
+
+  // Sticky nav shadow on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) nav.classList.add('backdrop-blur-xl');
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.tab-panel[data-panel="${tab}"]`).classList.add('active');
+    });
+  });
+
+  // Counters
+  const counters = document.querySelectorAll('[data-counter]');
+  const runCounter = (el) => {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals || '0');
+    if (target === 0) { el.textContent = '0'; return; }
+    let cur = 0;
+    const step = target / 60;
+    const tick = () => {
+      cur += step;
+      if (cur >= target) { cur = target; el.textContent = decimals ? cur.toFixed(decimals) : Math.round(cur).toLocaleString(); return; }
+      el.textContent = decimals ? cur.toFixed(decimals) : Math.round(cur).toLocaleString();
+      requestAnimationFrame(tick);
+    };
+    tick();
+  };
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { runCounter(e.target); io.unobserve(e.target);} });
+  }, { threshold: 0.4 });
+  counters.forEach(c => io.observe(c));
+
+  // Latency chart
+  const chart = document.getElementById('latencyChart');
+  const BARS = 40;
+  const bars = [];
+  for (let i = 0; i < BARS; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'lat-bar flex-1';
+    bar.style.animationDelay = `${i * 60}ms`;
+    chart.appendChild(bar);
+    bars.push(bar);
+  }
+  const setBars = () => {
+    bars.forEach(b => {
+      const h = 20 + Math.random() * 80;
+      b.style.height = h + '%';
+    });
+  };
+  setBars();
+  setInterval(setBars, 1400);
+
+  // Live diagnostics numbers
+  const mCookies = document.getElementById('mCookies');
+  const mProxies = document.getElementById('mProxies');
+  const mLatency = document.getElementById('mLatency');
+  const mThroughput = document.getElementById('mThroughput');
+  let cookies = 1240, proxies = 18;
+  const updateMetrics = () => {
+    cookies += Math.floor(Math.random() * 5);
+    proxies = 16 + Math.floor(Math.random() * 6);
+    const lat = 34 + Math.floor(Math.random() * 22);
+    const thr = (180 + Math.random() * 60).toFixed(1);
+    mCookies.textContent = cookies.toLocaleString();
+    mProxies.textContent = proxies;
+    mLatency.textContent = lat;
+    mThroughput.textContent = `${thr} Mbps`;
+  };
+  updateMetrics();
+  setInterval(updateMetrics, 1600);
+</script>
+</body>
+</html>
