@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Accept Invitation — ZONIX Session OS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+      },
+      colors: {
+        ink: '#0b0f19',
+        neon: '#3b82f6',
+        cyan: '#00F0FF',
+      },
+    }
+  }
+}
+</script>
+<style>
+  body {
+    background: #0b0f19;
+    color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .glass {
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    box-shadow: 0 8px 24px -6px rgba(37,99,235,0.5);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 12px 30px -4px rgba(37,99,235,0.7);
+    transform: translateY(-1px);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #00F0FF 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>
+</head>
+<body class="p-4">
+
+<div class="w-full max-w-md">
+  <!-- LOGO -->
+  <div class="flex items-center justify-center gap-3 mb-8">
+    <img src="/zonix-logo.png" alt="ZONIX" class="w-10 h-10 rounded-xl object-cover" style="box-shadow:0 0 0 1px rgba(59,130,246,0.35), 0 6px 24px -6px rgba(59,130,246,0.55);" />
+    <div>
+      <div class="font-display font-extrabold tracking-tight text-xl leading-none">ZONIX</div>
+      <div class="text-[10px] uppercase tracking-[0.2em] text-cyan leading-none mt-0.5 font-bold">Session OS</div>
+    </div>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="glass rounded-3xl p-8 relative overflow-hidden">
+    <!-- LOADING STATE -->
+    <div id="state-loading" class="py-12 text-center">
+      <div class="w-10 h-10 border-3 border-cyan/20 border-t-cyan rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-sm text-gray-400">Verifying invitation link...</p>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div id="state-error" class="hidden py-8 text-center">
+      <div class="w-14 h-14 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-red-400">
+        <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+      </div>
+      <h3 class="font-display font-bold text-xl text-white mb-2">Invalid Invitation</h3>
+      <p id="error-message" class="text-sm text-gray-400 mb-6 leading-relaxed">This invitation link is invalid or has expired.</p>
+      <a href="/" class="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Go to Homepage
+      </a>
+    </div>
+
+    <!-- FORM STATE -->
+    <div id="state-form" class="hidden">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan/10 border border-cyan/20 text-xs text-cyan font-medium mb-4">
+        <i data-lucide="mail" class="w-3.5 h-3.5"></i> Invitation Verified
+      </div>
+
+      <h2 class="font-display font-extrabold text-2xl text-white tracking-tight">Create Your Account</h2>
+      <p class="text-sm text-gray-400 mt-1 mb-6">
+        You've been invited to join <span id="display-org" class="text-cyan font-semibold">...</span>
+      </p>
+
+      <form id="invite-form" class="space-y-4">
+        <div>
+          <label class="block text-xs text-gray-400 mb-1 font-mono uppercase tracking-wider">Email Address</label>
+          <input id="input-email" type="email" disabled class="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-gray-400 text-sm font-mono cursor-not-allowed" />
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1 font-mono uppercase tracking-wider">Choose Username</label>
+          <input id="input-username" type="text" required placeholder="e.g. john_dispatcher" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 focus:border-cyan text-white text-sm font-mono outline-none transition" />
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1 font-mono uppercase tracking-wider">Set Password</label>
+          <input id="input-password" type="password" required minlength="6" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 focus:border-cyan text-white text-sm font-mono outline-none transition" />
+        </div>
+
+        <div id="form-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3"></div>
+
+        <button type="submit" id="btn-submit" class="w-full btn-primary rounded-xl py-3.5 font-bold text-sm text-white flex items-center justify-center gap-2 mt-2 transition">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Complete Setup &amp; Create Account
+        </button>
+      </form>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="state-success" class="hidden py-8 text-center">
+      <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-400">
+        <i data-lucide="check" class="w-8 h-8"></i>
+      </div>
+      <h2 class="font-display font-extrabold text-2xl text-white mb-2">Account Ready!</h2>
+      <p class="text-sm text-gray-400 mb-6 leading-relaxed">Your account has been created successfully. You can now log into the ZONIX Desktop App using your credentials.</p>
+      
+      <div class="space-y-3">
+        <a href="zonix://login" class="w-full btn-primary rounded-xl py-3.5 font-bold text-sm text-white inline-flex items-center justify-center gap-2 transition">
+          <i data-lucide="external-link" class="w-4 h-4"></i> Open ZONIX App
+        </a>
+        <a href="/ZONIX-Dispatcher-Setup-1.6.7.exe" class="block text-xs text-cyan hover:underline py-2">
+          Don't have the app yet? Download ZONIX App (v1.6.7)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  const API_BASE = 'https://zonix-backend-ouhi.onrender.com/api';
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+
+  const elLoading = document.getElementById('state-loading');
+  const elError = document.getElementById('state-error');
+  const elForm = document.getElementById('state-form');
+  const elSuccess = document.getElementById('state-success');
+  const elErrMsg = document.getElementById('error-message');
+  const elDisplayOrg = document.getElementById('display-org');
+  const elEmail = document.getElementById('input-email');
+  const elUsername = document.getElementById('input-username');
+  const elPassword = document.getElementById('input-password');
+  const elFormError = document.getElementById('form-error');
+  const elFormSub = document.getElementById('invite-form');
+  const elBtnSub = document.getElementById('btn-submit');
+
+  async function init() {
+    if (!token) {
+      showError("No invitation token provided. Please check your invitation email link.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/invites/verify/${token}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || "Failed to verify invitation link.");
+        return;
+      }
+
+      elDisplayOrg.textContent = data.orgName;
+      elEmail.value = data.email;
+
+      elLoading.classList.add('hidden');
+      elForm.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    } catch (err) {
+      showError("Network error. Unable to connect to ZONIX server.");
+    }
+  }
+
+  function showError(msg) {
+    elErrMsg.textContent = msg;
+    elLoading.classList.add('hidden');
+    elForm.classList.add('hidden');
+    elError.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  }
+
+  elFormSub.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    elFormError.classList.add('hidden');
+    elBtnSub.disabled = true;
+    elBtnSub.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span> Creating Account...`;
+
+    try {
+      const res = await fetch(`${API_BASE}/invites/accept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          username: elUsername.value.trim(),
+          password: elPassword.value
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        elFormError.textContent = data.error || "Failed to create account.";
+        elFormError.classList.remove('hidden');
+        elBtnSub.disabled = false;
+        elBtnSub.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> Complete Setup &amp; Create Account`;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      elForm.classList.add('hidden');
+      elSuccess.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    } catch (err) {
+      elFormError.textContent = "Network error. Please try again.";
+      elFormError.classList.remove('hidden');
+      elBtnSub.disabled = false;
+      elBtnSub.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i> Complete Setup &amp; Create Account`;
+      if (window.lucide) lucide.createIcons();
+    }
+  });
+
+  init();
+</script>
+</body>
+</html>
