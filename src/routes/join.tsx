@@ -178,13 +178,27 @@ function JoinPage() {
             <div style={{ padding: '16px 0', textAlign: 'center' }}>
               <div style={{ width: '64px', height: '64px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#34d399', fontSize: '28px' }}>✓</div>
               <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '24px', color: '#fff', marginBottom: '8px' }}>Account Ready!</h2>
-              <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '24px', lineHeight: 1.5 }}>Your account has been created successfully. You can now log into the ZONIX Desktop App using your new credentials.</p>
+              <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '20px', lineHeight: 1.5 }}>
+                Your dispatcher account for <strong style={{ color: '#00F0FF' }}>{username}</strong> has been created successfully.
+              </p>
 
-              <a href="zonix://login" style={{ display: 'block', width: '100%', background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '14px', padding: '14px', borderRadius: '12px', textAlign: 'center', boxSizing: 'border-box', marginBottom: '12px' }}>
-                Open ZONIX App
+              <a href="zonix://login" style={{ display: 'block', width: '100%', background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '14px', padding: '14px', borderRadius: '12px', textAlign: 'center', boxSizing: 'border-box', marginBottom: '16px', boxShadow: '0 8px 24px -6px rgba(37,99,235,0.5)' }}>
+                🚀 Open ZONIX App
               </a>
-              <a href="/ZONIX-Dispatcher-Setup-1.6.8.exe" style={{ fontSize: '12px', color: '#00F0FF', textDecoration: 'underline' }}>
-                Don't have the app yet? Download ZONIX App (v1.6.8)
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', fontFamily: 'monospace', marginBottom: '4px' }}>YOUR LOGIN CREDENTIALS</div>
+                <div style={{ fontSize: '13px', color: '#fff', fontFamily: 'monospace' }}>
+                  Org: <strong style={{ color: '#00F0FF' }}>{orgName}</strong> &bull; Username: <strong style={{ color: '#fff' }}>{username}</strong>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '12px', lineHeight: 1.4 }}>
+                If clicking the button does not launch the app, open <strong>ZONIX Dispatcher</strong> from your Windows Start Menu or Desktop and log in with your credentials above.
+              </p>
+
+              <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.6.8/ZONIX-Dispatcher-Setup-1.6.8.exe" style={{ fontSize: '12px', color: '#00F0FF', textDecoration: 'underline' }}>
+                Need to install? Download ZONIX App (v1.6.8)
               </a>
             </div>
           )}
