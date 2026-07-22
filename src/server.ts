@@ -45,7 +45,20 @@ function isH3SwallowedErrorBody(body: string): boolean {
 }
 
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request, env: any, ctx: any) {
+    // 1. Try serving static assets from env.ASSETS first (e.g. join.html, zonix.html)
+    if (env && env.ASSETS) {
+      try {
+        const assetRes = await env.ASSETS.fetch(request);
+        if (assetRes.status !== 404) {
+          return assetRes;
+        }
+      } catch (e) {
+        // Fall through to SSR
+      }
+    }
+
+    // 2. Fallback to SSR entry handler
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
