@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ZONIX — Web Admin Control Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>ZONIX — Cloud Web Admin Portal</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script>
 tailwind.config = {
   theme: {
@@ -18,8 +17,8 @@ tailwind.config = {
         display: ['Outfit', 'sans-serif'],
       },
       colors: {
-        ink: '#0b0f19',
-        card: '#111827',
+        ink: '#07090e',
+        card: '#0e1422',
         cyan: '#00F0FF',
         accent: '#2563eb',
       },
@@ -28,46 +27,131 @@ tailwind.config = {
 }
 </script>
 <style>
-  body { background: #0b0f19; color: #e5e7eb; font-family: 'Inter', sans-serif; min-height: 100vh; }
-  .glass { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-  .glow-cyan { text-shadow: 0 0 12px rgba(0,240,255,0.4); }
-  .btn-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); box-shadow: 0 4px 16px rgba(37,99,235,0.4); }
-  .btn-cyan { background: linear-gradient(135deg, #00F0FF 0%, #0284c7 100%); color: #000; box-shadow: 0 4px 16px rgba(0,240,255,0.3); }
+  * { box-sizing: border-box; }
+  body {
+    background: #07090e;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.08) 0px, transparent 50%);
+    color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .glass-card {
+    background: rgba(14, 20, 34, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  }
+  .glass-card-interactive {
+    background: rgba(14, 20, 34, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-card-interactive:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 240, 255, 0.1);
+  }
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #ffffff 0%, #00F0FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .btn-cyan {
+    background: linear-gradient(135deg, #00F0FF 0%, #0284c7 100%);
+    color: #000;
+    font-weight: 800;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.35);
+    transition: all 0.2s ease;
+  }
+  .btn-cyan:hover {
+    box-shadow: 0 6px 28px rgba(0, 240, 255, 0.5);
+    transform: translateY(-1px);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    transition: all 0.2s ease;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 6px 28px rgba(37, 99, 235, 0.6);
+    transform: translateY(-1px);
+  }
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #07090e; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
+  
+  .pill-tab {
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  .pill-tab.active {
+    background: rgba(0, 240, 255, 0.12);
+    color: #00F0FF;
+    border: 1px solid rgba(0, 240, 255, 0.25);
+  }
 </style>
 </head>
-<body>
+<body class="antialiased selection:bg-cyan selection:text-black">
 
 <div id="app">
   <!-- LOGIN CONTAINER -->
-  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass w-full max-w-md rounded-3xl p-8 shadow-2xl border border-white/10">
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="glass-card w-full max-w-md rounded-3xl p-8 shadow-2xl relative z-10">
       <div class="text-center mb-8">
-        <div class="inline-flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-display font-black text-black text-xl shadow-lg">Z</div>
-          <span class="font-display font-extrabold text-2xl tracking-tight text-white">ZONIX</span>
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan via-blue-500 to-blue-700 p-0.5 shadow-xl shadow-cyan/20 mb-4">
+          <div class="w-full h-full bg-ink rounded-[14px] flex items-center justify-center">
+            <span class="font-display font-black text-cyan text-2xl tracking-tighter">Z</span>
+          </div>
         </div>
-        <div class="text-xs text-cyan tracking-widest font-mono uppercase font-bold">CLOUD WEB ADMIN PORTAL</div>
-        <p class="text-sm text-gray-400 mt-2">Manage dispatchers, monitor active sessions & access control from any browser.</p>
+        <h1 class="font-display font-extrabold text-3xl text-white tracking-tight">ZONIX OS</h1>
+        <div class="inline-block mt-1 px-3 py-0.5 rounded-full bg-cyan/10 border border-cyan/20 text-cyan text-[10px] font-mono font-bold tracking-wider uppercase">
+          CLOUD WEB CONTROL PORTAL
+        </div>
+        <p class="text-xs text-gray-400 mt-3 leading-relaxed">
+          Real-time dispatcher management, session monitoring & access controls from any web browser or phone.
+        </p>
       </div>
 
       <form id="login-form" class="space-y-4">
         <div>
-          <label class="block text-xs text-gray-400 font-mono uppercase mb-1">Admin Username / Email</label>
-          <input type="text" id="login-id" required placeholder="superadmin" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan transition" />
+          <label class="block text-[11px] text-gray-400 font-mono uppercase tracking-wider mb-1.5">Admin Username / Email</label>
+          <div class="relative">
+            <input type="text" id="login-id" required placeholder="superadmin" class="w-full px-4 py-3.5 rounded-xl bg-black/60 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition placeholder-gray-600" />
+          </div>
         </div>
+        
         <div>
-          <label class="block text-xs text-gray-400 font-mono uppercase mb-1">Password</label>
-          <input type="password" id="login-pass" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan transition" />
-        </div>
-        <div>
-          <label class="block text-xs text-gray-400 font-mono uppercase mb-1">Organization ID / Name (Optional)</label>
-          <input type="text" id="login-org" placeholder="Leave blank if Super Admin or unknown" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan transition" />
+          <label class="block text-[11px] text-gray-400 font-mono uppercase tracking-wider mb-1.5">Password</label>
+          <input type="password" id="login-pass" required placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-black/60 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition placeholder-gray-600" />
         </div>
 
-        <div id="login-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3"></div>
+        <div>
+          <label class="block text-[11px] text-gray-400 font-mono uppercase tracking-wider mb-1.5">Organization ID (Optional)</label>
+          <input type="text" id="login-org" placeholder="Leave blank if Super Admin" class="w-full px-4 py-3.5 rounded-xl bg-black/60 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition placeholder-gray-600" />
+        </div>
 
-        <button type="submit" id="login-btn" class="w-full btn-gradient text-white font-bold py-3.5 px-4 rounded-xl text-sm transition hover:opacity-90">
-          Sign In to Web Admin Portal →
+        <div id="login-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-center font-medium"></div>
+
+        <button type="submit" id="login-btn" class="w-full btn-primary text-white font-bold py-3.5 px-4 rounded-xl text-sm transition mt-2 flex items-center justify-center gap-2">
+          <span>Sign In to Web Portal</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </button>
       </form>
     </div>
@@ -75,142 +159,173 @@ tailwind.config = {
 
   <!-- DASHBOARD CONTAINER -->
   <div id="dashboard-screen" class="hidden min-h-screen flex flex-col">
-    <!-- NAVBAR -->
-    <header class="bg-gray-900/90 border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md">
-      <div class="flex items-center gap-5">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-display font-black text-black text-base">Z</div>
-          <span class="font-display font-extrabold text-xl tracking-tight text-white">ZONIX</span>
-          <span class="bg-cyan/10 text-cyan border border-cyan/20 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full">WEB ADMIN</span>
+    <!-- STICKY HEADER -->
+    <header class="bg-gray-950/80 border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-50 backdrop-blur-xl">
+      <div class="flex items-center gap-3 sm:gap-6">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan to-blue-600 p-0.5 shadow-md shadow-cyan/20">
+            <div class="w-full h-full bg-ink rounded-[10px] flex items-center justify-center font-display font-black text-cyan text-sm">Z</div>
+          </div>
+          <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white">ZONIX</span>
+          <span class="bg-cyan/10 text-cyan border border-cyan/20 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full hidden sm:inline-block">WEB ADMIN</span>
         </div>
 
-        <!-- Org Selector -->
-        <div class="hidden sm:flex items-center gap-2 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl">
-          <span class="text-xs text-gray-400 font-mono uppercase">ORG:</span>
-          <select id="org-select" class="bg-transparent text-cyan font-bold text-xs outline-none cursor-pointer"></select>
+        <!-- Org Selector Dropdown -->
+        <div id="org-selector-wrapper" class="flex items-center gap-2 bg-black/50 border border-white/10 px-3 py-1.5 rounded-xl">
+          <span class="text-[10px] text-gray-400 font-mono uppercase font-bold hidden xs:inline">ORG:</span>
+          <select id="org-select" class="bg-transparent text-cyan font-bold text-xs outline-none cursor-pointer max-w-[160px] sm:max-w-[220px] truncate"></select>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div class="hidden md:flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div class="flex items-center gap-3 sm:gap-5">
+        <div class="hidden lg:flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span>Cloud Sync Active</span>
         </div>
 
-        <div class="text-xs text-gray-400">
-          <strong id="user-display-name" class="text-white">Admin</strong>
+        <div class="text-right hidden sm:block">
+          <div id="user-display-name" class="text-xs font-bold text-white">Admin</div>
+          <div id="user-display-role" class="text-[10px] text-cyan font-mono">SUPER_ADMIN</div>
         </div>
 
-        <button id="logout-btn" class="bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-500/20 transition">
-          Sign Out
+        <button id="logout-btn" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span class="hidden xs:inline">Sign Out</span>
         </button>
       </div>
     </header>
 
-    <!-- TABS BAR -->
-    <nav class="bg-gray-950 border-b border-white/5 px-6 flex gap-2 overflow-x-auto">
-      <button data-tab="overview" class="tab-btn active px-4 py-3.5 text-xs font-semibold border-b-2 border-cyan text-cyan flex items-center gap-2">
-        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview & Stats
-      </button>
-      <button data-tab="users" class="tab-btn px-4 py-3.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2">
-        <i data-lucide="users" class="w-4 h-4"></i> Dispatcher Registry (<span id="user-count-badge">0</span>)
-      </button>
-      <button data-tab="invites" class="tab-btn px-4 py-3.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2">
-        <i data-lucide="mail" class="w-4 h-4"></i> Invitations (<span id="invite-count-badge">0</span>)
-      </button>
-      <button data-tab="orgs" class="tab-btn px-4 py-3.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2">
-        <i data-lucide="building" class="w-4 h-4"></i> Organization Settings
-      </button>
-      <button data-tab="mobile" class="tab-btn px-4 py-3.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2">
-        <i data-lucide="smartphone" class="w-4 h-4"></i> Mobile App Setup (PWA)
-      </button>
-    </nav>
+    <!-- HORIZONTAL PILL TABS BAR -->
+    <div class="bg-gray-950/60 border-b border-white/5 px-4 sm:px-8 py-2.5 overflow-x-auto scrollbar-none">
+      <div class="flex items-center gap-2 min-w-max">
+        <button data-tab="overview" class="pill-tab active px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          <span>Overview</span>
+        </button>
 
-    <!-- MAIN BODY -->
-    <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+        <button data-tab="users" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span>Dispatcher Registry</span>
+          <span id="user-count-badge" class="bg-cyan/20 text-cyan text-[10px] font-mono font-bold px-2 py-0.5 rounded-full">0</span>
+        </button>
+
+        <button data-tab="invites" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span>Invitations</span>
+          <span id="invite-count-badge" class="bg-yellow-500/20 text-yellow-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full">0</span>
+        </button>
+
+        <button data-tab="orgs" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <span>Organizations</span>
+        </button>
+
+        <button data-tab="mobile" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>Mobile App (PWA)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
       
-      <!-- OVERVIEW TAB CONTENT -->
+      <!-- OVERVIEW TAB -->
       <section id="tab-overview" class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="glass p-5 rounded-2xl">
-            <div class="text-xs text-gray-400 font-mono uppercase mb-1">TOTAL DISPATCHERS</div>
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">TOTAL DISPATCHERS</div>
             <div id="stat-total-users" class="text-3xl font-display font-extrabold text-white">0</div>
-            <div id="stat-active-users" class="text-xs text-emerald-400 mt-1">0 Active Seats Allocated</div>
+            <div id="stat-active-users" class="text-xs text-emerald-400 font-medium mt-1">0 Active Seats Allocated</div>
           </div>
-          <div class="glass p-5 rounded-2xl">
-            <div class="text-xs text-gray-400 font-mono uppercase mb-1">PENDING INVITATIONS</div>
+
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">PENDING INVITATIONS</div>
             <div id="stat-pending-invites" class="text-3xl font-display font-extrabold text-cyan">0</div>
-            <div class="text-xs text-gray-400 mt-1">Awaiting onboarding</div>
+            <div class="text-xs text-gray-400 font-medium mt-1">Awaiting dispatcher signup</div>
           </div>
-          <div class="glass p-5 rounded-2xl">
-            <div class="text-xs text-gray-400 font-mono uppercase mb-1">TARGET LOAD BOARD</div>
+
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">TARGET LOAD BOARD</div>
             <div id="stat-target-url" class="text-sm font-bold text-white truncate mt-1">https://power.dat.com</div>
-            <div id="stat-org-name" class="text-xs text-blue-400 mt-1">DAT Organization</div>
+            <div id="stat-org-name" class="text-xs text-blue-400 font-medium mt-1">DAT Organization</div>
           </div>
-          <div class="glass p-5 rounded-2xl">
-            <div class="text-xs text-gray-400 font-mono uppercase mb-1">CLOUD BACKEND</div>
-            <div class="text-base font-display font-extrabold text-emerald-400 mt-1">100% OPERATIONAL</div>
-            <div class="text-xs text-gray-400 mt-1">Supabase DB & Render API</div>
+
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">CLOUD BACKEND</div>
+            <div class="text-lg font-display font-extrabold text-emerald-400 mt-1">100% OPERATIONAL</div>
+            <div class="text-xs text-gray-400 font-medium mt-1">Supabase PostgreSQL & Render API</div>
           </div>
         </div>
 
-        <div class="glass p-6 rounded-2xl">
-          <h3 class="font-display font-bold text-lg text-white mb-4">Quick Dispatcher Operations</h3>
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <h3 class="font-display font-bold text-lg text-white">Quick Dispatcher Operations</h3>
           <div class="flex flex-wrap gap-3">
-            <button onclick="openAddUserModal()" class="btn-gradient text-white text-xs font-bold px-5 py-3 rounded-xl transition">
-              + Add New Dispatcher
+            <button onclick="openAddUserModal()" class="btn-primary text-xs font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Add New Dispatcher</span>
             </button>
-            <button onclick="openInviteModal()" class="bg-cyan/10 text-cyan border border-cyan/20 text-xs font-bold px-5 py-3 rounded-xl hover:bg-cyan/20 transition">
-              ✉️ Send Email Invite
+
+            <button onclick="openInviteModal()" class="btn-cyan text-xs font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span>Send Email Invite</span>
             </button>
-            <button onclick="switchTab('users')" class="bg-white/5 text-white border border-white/10 text-xs font-semibold px-5 py-3 rounded-xl hover:bg-white/10 transition">
-              View Dispatcher Registry
+
+            <button onclick="switchTab('users')" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold px-5 py-3 rounded-xl transition">
+              View All Dispatchers
             </button>
           </div>
         </div>
       </section>
 
-      <!-- USERS TAB CONTENT -->
-      <section id="tab-users" class="hidden glass p-6 rounded-2xl space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-4">
+      <!-- DISPATCHER REGISTRY TAB -->
+      <section id="tab-users" class="hidden glass-card p-4 sm:p-6 rounded-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 class="font-display font-extrabold text-xl text-white">Dispatcher Registry</h3>
-            <p class="text-xs text-gray-400 mt-1">Manage dispatcher accounts, tab limits, and active access status</p>
+            <p class="text-xs text-gray-400 mt-1">Manage dispatcher credentials, seat limits & access status</p>
           </div>
           <div class="flex items-center gap-3">
-            <input type="text" id="user-search" placeholder="Search dispatchers..." class="px-4 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
-            <button onclick="openAddUserModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
-              + New User
+            <input type="text" id="user-search" placeholder="Search dispatchers..." class="w-full sm:w-64 px-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan transition" />
+            <button onclick="openAddUserModal()" class="btn-primary text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>New User</span>
             </button>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <!-- DESKTOP TABLE (Hidden on mobile) -->
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-white/10 text-gray-400 font-mono uppercase text-[10px]">
-                <th class="py-3 px-3">USERNAME</th>
-                <th class="py-3 px-3">EMAIL</th>
-                <th class="py-3 px-3">ROLE</th>
-                <th class="py-3 px-3">MAX TABS</th>
-                <th class="py-3 px-3">STATUS</th>
-                <th class="py-3 px-3">LAST LOGIN</th>
-                <th class="py-3 px-3 text-right">ACTIONS</th>
+                <th class="py-3 px-4">USERNAME</th>
+                <th class="py-3 px-4">EMAIL</th>
+                <th class="py-3 px-4">ROLE</th>
+                <th class="py-3 px-4">MAX TABS</th>
+                <th class="py-3 px-4">STATUS</th>
+                <th class="py-3 px-4">LAST LOGIN</th>
+                <th class="py-3 px-4 text-right">ACTIONS</th>
               </tr>
             </thead>
-            <tbody id="users-table-body">
+            <tbody id="users-table-body" class="divide-y divide-white/5">
               <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
+
+        <!-- MOBILE CARDS CONTAINER (Visible only on mobile screens < 768px) -->
+        <div id="users-mobile-cards" class="md:hidden space-y-3">
+          <!-- Rendered via JS -->
+        </div>
       </section>
 
-      <!-- INVITES TAB CONTENT -->
-      <section id="tab-invites" class="hidden glass p-6 rounded-2xl space-y-4">
+      <!-- INVITATIONS TAB -->
+      <section id="tab-invites" class="hidden glass-card p-4 sm:p-6 rounded-2xl space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-display font-extrabold text-xl text-white">Pending Invitations</h3>
-            <p class="text-xs text-gray-400 mt-1">Track email invitations sent to dispatchers</p>
+            <h3 class="font-display font-extrabold text-xl text-white">Pending Email Invitations</h3>
+            <p class="text-xs text-gray-400 mt-1">Track onboarding email invitations sent to dispatchers</p>
           </div>
           <button onclick="openInviteModal()" class="btn-cyan text-xs font-black px-4 py-2.5 rounded-xl transition">
             + Invite Dispatcher
@@ -221,50 +336,54 @@ tailwind.config = {
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-white/10 text-gray-400 font-mono uppercase text-[10px]">
-                <th class="py-3 px-3">RECIPIENT EMAIL</th>
-                <th class="py-3 px-3">ROLE</th>
-                <th class="py-3 px-3">MAX TABS</th>
-                <th class="py-3 px-3">STATUS</th>
-                <th class="py-3 px-3">EXPIRES AT</th>
+                <th class="py-3 px-4">RECIPIENT EMAIL</th>
+                <th class="py-3 px-4">ROLE</th>
+                <th class="py-3 px-4">MAX TABS</th>
+                <th class="py-3 px-4">STATUS</th>
+                <th class="py-3 px-4">EXPIRES AT</th>
               </tr>
             </thead>
-            <tbody id="invites-table-body">
+            <tbody id="invites-table-body" class="divide-y divide-white/5">
               <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- ORGS TAB CONTENT -->
-      <section id="tab-orgs" class="hidden glass p-6 rounded-2xl space-y-4">
-        <h3 class="font-display font-extrabold text-xl text-white">Organization Settings</h3>
+      <!-- ORGANIZATIONS TAB -->
+      <section id="tab-orgs" class="hidden glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="font-display font-extrabold text-xl text-white">Organization Details</h3>
         <div id="orgs-card-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Rendered via JS -->
         </div>
       </section>
 
-      <!-- MOBILE PWA TAB CONTENT -->
-      <section id="tab-mobile" class="hidden glass p-8 rounded-2xl max-w-2xl mx-auto space-y-6 text-center">
-        <div class="w-14 h-14 bg-cyan/10 border border-cyan/20 rounded-2xl flex items-center justify-center mx-auto text-2xl">📲</div>
+      <!-- MOBILE APP PWA SETUP TAB -->
+      <section id="tab-mobile" class="hidden glass-card p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-6 text-center">
+        <div class="w-16 h-16 bg-cyan/10 border border-cyan/20 rounded-2xl flex items-center justify-center mx-auto text-3xl">📲</div>
         <div>
-          <h3 class="font-display font-extrabold text-2xl text-white">Install on Smartphone (PWA)</h3>
-          <p class="text-xs text-gray-400 mt-1">Add ZONIX Web Admin to your phone's home screen as a standalone mobile app.</p>
+          <h3 class="font-display font-extrabold text-2xl text-white">Install ZONIX Admin on Phone</h3>
+          <p class="text-xs text-gray-400 mt-1">Add ZONIX Web Admin to your smartphone home screen as a standalone mobile app.</p>
         </div>
 
         <div class="text-left space-y-4 text-xs">
-          <div class="bg-black/40 p-5 rounded-2xl border border-white/5 space-y-2">
-            <div class="font-bold text-cyan text-sm">📱 iOS (iPhone / iPad):</div>
-            <ol class="list-decimal list-inside text-gray-400 space-y-1">
-              <li>Open <strong>https://thezonix.com/admin</strong> in Safari.</li>
-              <li>Tap the <strong>Share</strong> icon (bottom toolbar).</li>
+          <div class="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
+            <div class="font-bold text-cyan text-sm flex items-center gap-2">
+              <span>📱 iOS (iPhone / iPad):</span>
+            </div>
+            <ol class="list-decimal list-inside text-gray-400 space-y-1.5 leading-relaxed">
+              <li>Open <strong>https://thezonix.com/admin.html</strong> in Safari.</li>
+              <li>Tap the <strong>Share</strong> button (bottom toolbar).</li>
               <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
             </ol>
           </div>
 
-          <div class="bg-black/40 p-5 rounded-2xl border border-white/5 space-y-2">
-            <div class="font-bold text-sky-400 text-sm">🤖 Android (Chrome):</div>
-            <ol class="list-decimal list-inside text-gray-400 space-y-1">
-              <li>Open <strong>https://thezonix.com/admin</strong> in Chrome.</li>
+          <div class="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
+            <div class="font-bold text-sky-400 text-sm flex items-center gap-2">
+              <span>🤖 Android (Chrome):</span>
+            </div>
+            <ol class="list-decimal list-inside text-gray-400 space-y-1.5 leading-relaxed">
+              <li>Open <strong>https://thezonix.com/admin.html</strong> in Chrome.</li>
               <li>Tap the <strong>3 dots menu</strong> (top right).</li>
               <li>Tap <strong>Install app</strong> or <strong>Add to Home Screen</strong>.</li>
             </ol>
@@ -277,26 +396,30 @@ tailwind.config = {
 </div>
 
 <!-- MODAL: ADD DISPATCHER -->
-<div id="modal-add-user" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-  <div class="glass w-full max-w-md rounded-3xl p-6 border border-white/10 space-y-4">
-    <h3 class="font-display font-extrabold text-xl text-white">+ Add New Dispatcher</h3>
-    <form id="form-add-user" class="space-y-3">
+<div id="modal-add-user" class="hidden fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 z-50">
+  <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display font-extrabold text-xl text-white">+ Add New Dispatcher</h3>
+      <button onclick="closeAddUserModal()" class="text-gray-400 hover:text-white p-1">✕</button>
+    </div>
+    
+    <form id="form-add-user" class="space-y-3.5">
       <div>
         <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Username</label>
-        <input type="text" id="add-username" required placeholder="john_dispatcher" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+        <input type="text" id="add-username" required placeholder="john_dispatcher" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
       </div>
       <div>
         <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Password</label>
-        <input type="password" id="add-password" required minlength="8" placeholder="At least 8 chars" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+        <input type="password" id="add-password" required minlength="8" placeholder="At least 8 chars" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
       </div>
       <div>
         <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Email (Optional)</label>
-        <input type="email" id="add-email" placeholder="john@company.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+        <input type="email" id="add-email" placeholder="john@company.com" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Role</label>
-          <select id="add-role" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-900 border border-white/10 text-white text-xs outline-none">
+          <select id="add-role" class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-xs outline-none">
             <option value="DISPATCHER">DISPATCHER</option>
             <option value="MANAGER">MANAGER</option>
             <option value="ADMIN">ADMIN</option>
@@ -304,48 +427,52 @@ tailwind.config = {
         </div>
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Max Tabs</label>
-          <input type="number" id="add-maxtabs" min="1" max="50" value="5" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-cyan text-xs outline-none" />
+          <input type="number" id="add-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono" />
         </div>
       </div>
 
-      <div id="add-user-msg" class="hidden text-xs"></div>
+      <div id="add-user-msg" class="hidden text-xs p-3 rounded-xl"></div>
 
       <div class="flex gap-2 pt-2">
-        <button type="button" onclick="closeAddUserModal()" class="flex-1 py-2.5 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
-        <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-500">Create User</button>
+        <button type="button" onclick="closeAddUserModal()" class="flex-1 py-3 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
+        <button type="submit" class="flex-1 py-3 btn-primary text-white rounded-xl text-xs font-bold">Create User</button>
       </div>
     </form>
   </div>
 </div>
 
 <!-- MODAL: INVITE DISPATCHER -->
-<div id="modal-invite" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-  <div class="glass w-full max-w-md rounded-3xl p-6 border border-white/10 space-y-4">
-    <h3 class="font-display font-extrabold text-xl text-white">✉️ Send Email Invitation</h3>
-    <form id="form-invite" class="space-y-3">
+<div id="modal-invite" class="hidden fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 z-50">
+  <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display font-extrabold text-xl text-white">✉️ Send Email Invitation</h3>
+      <button onclick="closeInviteModal()" class="text-gray-400 hover:text-white p-1">✕</button>
+    </div>
+    
+    <form id="form-invite" class="space-y-3.5">
       <div>
         <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Recipient Email</label>
-        <input type="email" id="invite-email" required placeholder="dispatcher@company.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+        <input type="email" id="invite-email" required placeholder="dispatcher@company.com" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Role</label>
-          <select id="invite-role" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-900 border border-white/10 text-white text-xs outline-none">
+          <select id="invite-role" class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-xs outline-none">
             <option value="DISPATCHER">DISPATCHER</option>
             <option value="MANAGER">MANAGER</option>
           </select>
         </div>
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Max Tabs</label>
-          <input type="number" id="invite-maxtabs" min="1" max="50" value="5" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-cyan text-xs outline-none" />
+          <input type="number" id="invite-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono" />
         </div>
       </div>
 
-      <div id="invite-msg" class="hidden text-xs"></div>
+      <div id="invite-msg" class="hidden text-xs p-3 rounded-xl"></div>
 
       <div class="flex gap-2 pt-2">
-        <button type="button" onclick="closeInviteModal()" class="flex-1 py-2.5 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
-        <button type="submit" class="flex-1 py-2.5 btn-gradient text-white rounded-xl text-xs font-bold">Send Invite</button>
+        <button type="button" onclick="closeInviteModal()" class="flex-1 py-3 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
+        <button type="submit" class="flex-1 py-3 btn-cyan text-black rounded-xl text-xs font-black">Send Invite</button>
       </div>
     </form>
   </div>
@@ -361,7 +488,6 @@ tailwind.config = {
   let invites = [];
 
   document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
     if (authToken && authUser) {
       showDashboard();
     } else {
@@ -378,6 +504,7 @@ tailwind.config = {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
     document.getElementById('user-display-name').textContent = authUser.username;
+    document.getElementById('user-display-role').textContent = authUser.role;
     fetchOrganizations();
   }
 
@@ -401,7 +528,7 @@ tailwind.config = {
       });
       const data = await res.json();
       if (!res.ok) {
-        errDiv.textContent = data.error || 'Login failed';
+        errDiv.textContent = data.error || 'Login failed. Please verify credentials.';
         errDiv.classList.remove('hidden');
         return;
       }
@@ -416,7 +543,7 @@ tailwind.config = {
       localStorage.setItem('zonix_admin_user', JSON.stringify(authUser));
       showDashboard();
     } catch (err) {
-      errDiv.textContent = 'Failed to connect to cloud API';
+      errDiv.textContent = 'Failed to connect to cloud backend.';
       errDiv.classList.remove('hidden');
     }
   });
@@ -445,7 +572,8 @@ tailwind.config = {
           const opt = document.createElement('option');
           opt.value = o.id;
           opt.textContent = `${o.displayName} (${o.name})`;
-          opt.style.background = '#111827';
+          opt.style.background = '#0e1422';
+          opt.style.color = '#ffffff';
           select.appendChild(opt);
         });
         if (orgs.length > 0) {
@@ -497,27 +625,42 @@ tailwind.config = {
     document.getElementById('user-count-badge').textContent = users.length;
     document.getElementById('invite-count-badge').textContent = pendingInvites;
 
-    // Render Users Table
+    // Filtered users search
+    const searchQuery = (document.getElementById('user-search')?.value || '').toLowerCase();
+    const filteredUsers = users.filter(u => 
+      u.username.toLowerCase().includes(searchQuery) || 
+      (u.email && u.email.toLowerCase().includes(searchQuery))
+    );
+
+    // 1. RENDER DESKTOP TABLE
     const uBody = document.getElementById('users-table-body');
     uBody.innerHTML = '';
-    if (users.length === 0) {
-      uBody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">No dispatchers found.</td></tr>';
+    if (filteredUsers.length === 0) {
+      uBody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500 font-medium">No dispatchers found.</td></tr>';
     } else {
-      users.forEach(u => {
+      filteredUsers.forEach(u => {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-white/5 hover:bg-white/[0.02] transition';
         tr.innerHTML = `
-          <td class="py-3 px-3 font-bold text-white">${u.username}</td>
-          <td class="py-3 px-3 text-gray-400 font-mono">${u.email || 'N/A'}</td>
-          <td class="py-3 px-3"><span class="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-mono text-[10px] font-bold">${u.role}</span></td>
-          <td class="py-3 px-3 text-cyan font-mono">${u.maxTabs || 5} tabs</td>
-          <td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">${u.status}</span></td>
-          <td class="py-3 px-3 text-gray-500">${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : 'Never'}</td>
-          <td class="py-3 px-3 text-right">
-            <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="bg-white/5 hover:bg-white/10 ${u.status === 'ACTIVE' ? 'text-red-400' : 'text-emerald-400'} px-2.5 py-1 rounded text-[11px] font-semibold mr-1">
-              ${u.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+          <td class="py-3.5 px-4 font-bold text-white">${u.username}</td>
+          <td class="py-3.5 px-4 text-gray-400 font-mono">${u.email || 'N/A'}</td>
+          <td class="py-3.5 px-4">
+            <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-md font-mono text-[10px] font-bold">
+              ${u.role}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-cyan font-mono font-semibold">${u.maxTabs || 5} tabs</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
+              ${u.status}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-gray-500 text-[11px]">${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : 'Never'}</td>
+          <td class="py-3.5 px-4 text-right space-x-1">
+            <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="bg-white/5 hover:bg-white/10 ${u.status === 'ACTIVE' ? 'text-amber-400 border-amber-500/20' : 'text-emerald-400 border-emerald-500/20'} border px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">
+              ${u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
             </button>
-            <button onclick="deleteUser('${u.id}', '${u.username}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1 rounded text-[11px] font-semibold">
+            <button onclick="deleteUser('${u.id}', '${u.username}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">
               Delete
             </button>
           </td>
@@ -526,21 +669,70 @@ tailwind.config = {
       });
     }
 
+    // 2. RENDER MOBILE CARDS (For Mobile Screen Resolution)
+    const mCards = document.getElementById('users-mobile-cards');
+    mCards.innerHTML = '';
+    if (filteredUsers.length === 0) {
+      mCards.innerHTML = '<div class="p-6 text-center text-gray-500 text-xs">No dispatchers found.</div>';
+    } else {
+      filteredUsers.forEach(u => {
+        const card = document.createElement('div');
+        card.className = 'bg-black/50 border border-white/10 rounded-2xl p-4 space-y-3';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan/20 to-blue-600/20 border border-cyan/30 flex items-center justify-center font-bold text-cyan text-xs font-mono uppercase">
+                ${u.username.substring(0, 2)}
+              </div>
+              <div>
+                <div class="font-bold text-white text-sm">${u.username}</div>
+                <div class="text-[11px] text-gray-400 font-mono">${u.email || 'No email attached'}</div>
+              </div>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
+              ${u.status}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 bg-white/[0.02] p-2.5 rounded-xl border border-white/5 text-[11px]">
+            <div>
+              <span class="text-gray-500 font-mono uppercase text-[9px] block">Role / Seats</span>
+              <span class="text-cyan font-bold font-mono">${u.role} (${u.maxTabs || 5} tabs)</span>
+            </div>
+            <div>
+              <span class="text-gray-500 font-mono uppercase text-[9px] block">Last Login</span>
+              <span class="text-gray-300">${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : 'Never'}</span>
+            </div>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="flex-1 py-2 rounded-xl text-xs font-bold border transition ${u.status === 'ACTIVE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}">
+              ${u.status === 'ACTIVE' ? 'Suspend Access' : 'Activate Access'}
+            </button>
+            <button onclick="deleteUser('${u.id}', '${u.username}')" class="px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">
+              Delete
+            </button>
+          </div>
+        `;
+        mCards.appendChild(card);
+      });
+    }
+
     // Render Invites Table
     const iBody = document.getElementById('invites-table-body');
     iBody.innerHTML = '';
     if (invites.length === 0) {
-      iBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">No active pending invitations.</td></tr>';
+      iBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500 font-medium">No active pending invitations.</td></tr>';
     } else {
       invites.forEach(i => {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-white/5';
         tr.innerHTML = `
-          <td class="py-3 px-3 font-mono font-bold text-sky-400">${i.email}</td>
-          <td class="py-3 px-3 text-gray-400">${i.role}</td>
-          <td class="py-3 px-3 text-cyan font-mono">${i.maxTabs} tabs</td>
-          <td class="py-3 px-3"><span class="bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded text-[10px] font-bold">${i.status}</span></td>
-          <td class="py-3 px-3 text-gray-500">${new Date(i.expiresAt).toLocaleString()}</td>
+          <td class="py-3.5 px-4 font-mono font-bold text-sky-400">${i.email}</td>
+          <td class="py-3.5 px-4 text-gray-400">${i.role}</td>
+          <td class="py-3.5 px-4 text-cyan font-mono font-semibold">${i.maxTabs} tabs</td>
+          <td class="py-3.5 px-4"><span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded-full text-[10px] font-bold">${i.status}</span></td>
+          <td class="py-3.5 px-4 text-gray-500 text-[11px]">${new Date(i.expiresAt).toLocaleString()}</td>
         `;
         iBody.appendChild(tr);
       });
@@ -551,9 +743,9 @@ tailwind.config = {
     oGrid.innerHTML = '';
     orgs.forEach(o => {
       const card = document.createElement('div');
-      card.className = 'bg-black/40 border border-white/10 rounded-2xl p-5 space-y-2';
+      card.className = 'glass-card p-5 rounded-2xl space-y-2';
       card.innerHTML = `
-        <div class="text-lg font-bold text-white">${o.displayName}</div>
+        <div class="text-base font-bold text-white">${o.displayName}</div>
         <div class="text-xs text-cyan font-mono">ID: ${o.name}</div>
         <div class="text-xs text-gray-400">Target URL: <strong class="text-white">${o.targetUrl || 'https://power.dat.com'}</strong></div>
         <div class="text-xs text-gray-500">Users: ${o._count?.users || 0} &bull; Sessions: ${o._count?.sessions || 0}</div>
@@ -562,8 +754,13 @@ tailwind.config = {
     });
   }
 
+  // SEARCH BINDING
+  document.getElementById('user-search')?.addEventListener('input', () => {
+    renderDashboard();
+  });
+
   // TABS SWITCHER
-  document.querySelectorAll('.tab-btn').forEach(btn => {
+  document.querySelectorAll('.pill-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.getAttribute('data-tab');
       switchTab(tab);
@@ -571,20 +768,22 @@ tailwind.config = {
   });
 
   function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => {
+    document.querySelectorAll('.pill-tab').forEach(b => {
       if (b.getAttribute('data-tab') === tab) {
-        b.className = 'tab-btn active px-4 py-3.5 text-xs font-semibold border-b-2 border-cyan text-cyan flex items-center gap-2';
+        b.className = 'pill-tab active px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2';
       } else {
-        b.className = 'tab-btn px-4 py-3.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center gap-2';
+        b.className = 'pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2';
       }
     });
 
     ['overview', 'users', 'invites', 'orgs', 'mobile'].forEach(t => {
       const sec = document.getElementById(`tab-${t}`);
-      if (t === tab) {
-        sec.classList.remove('hidden');
-      } else {
-        sec.classList.add('hidden');
+      if (sec) {
+        if (t === tab) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
       }
     });
   }
@@ -638,12 +837,12 @@ tailwind.config = {
       const data = await res.json();
       if (!res.ok) {
         msg.textContent = data.error || 'Failed to create user';
-        msg.className = 'text-xs text-red-400';
+        msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
         msg.classList.remove('hidden');
         return;
       }
-      msg.textContent = 'User created successfully!';
-      msg.className = 'text-xs text-emerald-400';
+      msg.textContent = 'Dispatcher created successfully!';
+      msg.className = 'text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl';
       msg.classList.remove('hidden');
       setTimeout(() => {
         closeAddUserModal();
@@ -651,7 +850,7 @@ tailwind.config = {
       }, 1000);
     } catch (err) {
       msg.textContent = 'Error creating user';
-      msg.className = 'text-xs text-red-400';
+      msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
       msg.classList.remove('hidden');
     }
   });
@@ -675,12 +874,12 @@ tailwind.config = {
       const data = await res.json();
       if (!res.ok) {
         msg.textContent = data.error || 'Failed to send invite';
-        msg.className = 'text-xs text-red-400';
+        msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
         msg.classList.remove('hidden');
         return;
       }
-      msg.textContent = 'Invitation email sent!';
-      msg.className = 'text-xs text-emerald-400';
+      msg.textContent = 'Invitation email sent successfully!';
+      msg.className = 'text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl';
       msg.classList.remove('hidden');
       setTimeout(() => {
         closeInviteModal();
@@ -688,7 +887,7 @@ tailwind.config = {
       }, 1000);
     } catch (err) {
       msg.textContent = 'Error sending invite';
-      msg.className = 'text-xs text-red-400';
+      msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
       msg.classList.remove('hidden');
     }
   });
