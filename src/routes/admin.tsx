@@ -5,7 +5,7 @@ export const Route = createFileRoute('/admin')({
   component: AdminPage,
 });
 
-const BACKEND_URL = 'https://zonix-backend-api.onrender.com/api';
+const BACKEND_URL = 'https://zonix-backend-ouhi.onrender.com/api';
 
 function AdminPage() {
   const [token, setToken] = useState<string | null>(null);
