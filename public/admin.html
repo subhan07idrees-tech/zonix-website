@@ -59,6 +59,10 @@ tailwind.config = {
           <label class="block text-xs text-gray-400 font-mono uppercase mb-1">Password</label>
           <input type="password" id="login-pass" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan transition" />
         </div>
+        <div>
+          <label class="block text-xs text-gray-400 font-mono uppercase mb-1">Organization ID / Name (Optional)</label>
+          <input type="text" id="login-org" placeholder="Leave blank if Super Admin or unknown" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan transition" />
+        </div>
 
         <div id="login-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3"></div>
 
@@ -382,14 +386,18 @@ tailwind.config = {
     e.preventDefault();
     const id = document.getElementById('login-id').value;
     const pass = document.getElementById('login-pass').value;
+    const org = document.getElementById('login-org').value;
     const errDiv = document.getElementById('login-error');
     errDiv.classList.add('hidden');
+
+    const payload = { username: id, password: pass };
+    if (org && org.trim()) payload.orgId = org.trim();
 
     try {
       const res = await fetch(`${BACKEND_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: id, password: pass })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (!res.ok) {
