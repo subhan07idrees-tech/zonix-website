@@ -1048,14 +1048,13 @@ tailwind.config = {
     const inviteOrgId = document.getElementById('invite-org-select').value || selectedOrgId;
 
     try {
-      const res = await fetch(`${BACKEND_URL}/invites/send`, {
+      const res = await fetch(`${BACKEND_URL}/invites/${inviteOrgId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: document.getElementById('invite-email').value,
           role: document.getElementById('invite-role').value,
-          maxTabs: Number(document.getElementById('invite-maxtabs').value),
-          orgId: inviteOrgId
+          maxTabs: Number(document.getElementById('invite-maxtabs').value)
         })
       });
       const data = await res.json();
