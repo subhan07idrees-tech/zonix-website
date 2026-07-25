@@ -572,6 +572,9 @@ tailwind.config = {
     document.getElementById('dashboard-screen').classList.remove('hidden');
     document.getElementById('user-display-name').textContent = authUser.username;
     document.getElementById('user-display-role').textContent = authUser.role;
+
+    const savedTab = window.location.hash.replace('#', '') || localStorage.getItem('zonix_admin_tab') || 'overview';
+    switchTab(savedTab);
     fetchOrganizations();
   }
 
@@ -913,6 +916,13 @@ tailwind.config = {
   });
 
   function switchTab(tab) {
+    localStorage.setItem('zonix_admin_tab', tab);
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + tab);
+    } else {
+      window.location.hash = '#' + tab;
+    }
+
     document.querySelectorAll('.pill-tab').forEach(b => {
       if (b.getAttribute('data-tab') === tab) {
         b.className = 'pill-tab active px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2';
