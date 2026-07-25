@@ -39,32 +39,11 @@ tailwind.config = {
     margin: 0;
   }
   .glass-card {
-    background: rgba(14, 20, 34, 0.75);
+    background: rgba(14, 20, 34, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  }
-  .glass-card-interactive {
-    background: rgba(14, 20, 34, 0.75);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .glass-card-interactive:hover {
-    border-color: rgba(0, 240, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0, 240, 255, 0.1);
-  }
-  .text-gradient-cyan {
-    background: linear-gradient(135deg, #ffffff 0%, #00F0FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .text-gradient-blue {
-    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
   .btn-cyan {
     background: linear-gradient(135deg, #00F0FF 0%, #0284c7 100%);
@@ -95,7 +74,6 @@ tailwind.config = {
   ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
   
   .pill-tab {
-    position: relative;
     transition: all 0.2s ease;
   }
   .pill-tab.active {
@@ -108,7 +86,7 @@ tailwind.config = {
 <body class="antialiased selection:bg-cyan selection:text-black">
 
 <div id="app">
-  <!-- LOGIN CONTAINER -->
+  <!-- LOGIN SCREEN -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -125,16 +103,14 @@ tailwind.config = {
           CLOUD WEB CONTROL PORTAL
         </div>
         <p class="text-xs text-gray-400 mt-3 leading-relaxed">
-          Real-time dispatcher management, session monitoring & access controls from any web browser or phone.
+          Real-time dispatcher management, active session monitoring & access controls from any web browser.
         </p>
       </div>
 
       <form id="login-form" class="space-y-4">
         <div>
           <label class="block text-[11px] text-gray-400 font-mono uppercase tracking-wider mb-1.5">Admin Username / Email</label>
-          <div class="relative">
-            <input type="text" id="login-id" required placeholder="superadmin" class="w-full px-4 py-3.5 rounded-xl bg-black/60 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition placeholder-gray-600" />
-          </div>
+          <input type="text" id="login-id" required placeholder="superadmin" class="w-full px-4 py-3.5 rounded-xl bg-black/60 border border-white/10 text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition placeholder-gray-600" />
         </div>
         
         <div>
@@ -195,12 +171,18 @@ tailwind.config = {
       </div>
     </header>
 
-    <!-- HORIZONTAL PILL TABS BAR -->
+    <!-- NAVIGATION TABS -->
     <div class="bg-gray-950/60 border-b border-white/5 px-4 sm:px-8 py-2.5 overflow-x-auto scrollbar-none">
       <div class="flex items-center gap-2 min-w-max">
         <button data-tab="overview" class="pill-tab active px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
           <span>Overview</span>
+        </button>
+
+        <button data-tab="sessions" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Active Sessions</span>
+          <span id="session-count-badge" class="bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full">0</span>
         </button>
 
         <button data-tab="users" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
@@ -215,14 +197,14 @@ tailwind.config = {
           <span id="invite-count-badge" class="bg-yellow-500/20 text-yellow-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full">0</span>
         </button>
 
+        <button data-tab="logs" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>Live Activity Logs</span>
+        </button>
+
         <button data-tab="orgs" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           <span>Organizations</span>
-        </button>
-
-        <button data-tab="mobile" class="pill-tab px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-          <span>Mobile App (PWA)</span>
         </button>
       </div>
     </div>
@@ -234,14 +216,20 @@ tailwind.config = {
       <section id="tab-overview" class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">LIVE CONNECTED SESSIONS</div>
+            <div id="stat-active-sessions" class="text-3xl font-display font-extrabold text-emerald-400">0</div>
+            <div class="text-xs text-emerald-400 font-medium mt-1">Dispatchers active now</div>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
             <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">TOTAL DISPATCHERS</div>
             <div id="stat-total-users" class="text-3xl font-display font-extrabold text-white">0</div>
-            <div id="stat-active-users" class="text-xs text-emerald-400 font-medium mt-1">0 Active Seats Allocated</div>
+            <div id="stat-active-users" class="text-xs text-cyan font-medium mt-1">0 Active Seats Allocated</div>
           </div>
 
           <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
             <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">PENDING INVITATIONS</div>
-            <div id="stat-pending-invites" class="text-3xl font-display font-extrabold text-cyan">0</div>
+            <div id="stat-pending-invites" class="text-3xl font-display font-extrabold text-yellow-400">0</div>
             <div class="text-xs text-gray-400 font-medium mt-1">Awaiting dispatcher signup</div>
           </div>
 
@@ -249,12 +237,6 @@ tailwind.config = {
             <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">TARGET LOAD BOARD</div>
             <div id="stat-target-url" class="text-sm font-bold text-white truncate mt-1">https://power.dat.com</div>
             <div id="stat-org-name" class="text-xs text-blue-400 font-medium mt-1">DAT Organization</div>
-          </div>
-
-          <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-            <div class="text-[11px] text-gray-400 font-mono uppercase font-bold tracking-wider mb-1">CLOUD BACKEND</div>
-            <div class="text-lg font-display font-extrabold text-emerald-400 mt-1">100% OPERATIONAL</div>
-            <div class="text-xs text-gray-400 font-medium mt-1">Supabase PostgreSQL & Render API</div>
           </div>
         </div>
 
@@ -271,10 +253,41 @@ tailwind.config = {
               <span>Send Email Invite</span>
             </button>
 
-            <button onclick="switchTab('users')" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold px-5 py-3 rounded-xl transition">
-              View All Dispatchers
+            <button onclick="switchTab('sessions')" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold px-5 py-3 rounded-xl transition">
+              View Active Sessions
             </button>
           </div>
+        </div>
+      </section>
+
+      <!-- ACTIVE SESSIONS TAB -->
+      <section id="tab-sessions" class="hidden glass-card p-4 sm:p-6 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-display font-extrabold text-xl text-white">Live Connected Dispatcher Sessions</h3>
+            <p class="text-xs text-gray-400 mt-1">Real-time monitoring of dispatchers currently logged in and using ZONIX</p>
+          </div>
+          <button onclick="fetchDashboardData()" class="bg-white/5 hover:bg-white/10 text-cyan border border-cyan/20 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Refresh Live</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-white/10 text-gray-400 font-mono uppercase text-[10px]">
+                <th class="py-3 px-4">DISPATCHER</th>
+                <th class="py-3 px-4">CONNECTED LOADBOARD</th>
+                <th class="py-3 px-4">LOCATION & IP</th>
+                <th class="py-3 px-4">CONNECTED AT</th>
+                <th class="py-3 px-4">STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="sessions-table-body" class="divide-y divide-white/5">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -283,7 +296,7 @@ tailwind.config = {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 class="font-display font-extrabold text-xl text-white">Dispatcher Registry</h3>
-            <p class="text-xs text-gray-400 mt-1">Manage dispatcher credentials, seat limits & access status</p>
+            <p class="text-xs text-gray-400 mt-1">Manage dispatcher credentials, max tab limits & access status</p>
           </div>
           <div class="flex items-center gap-3">
             <input type="text" id="user-search" placeholder="Search dispatchers..." class="w-full sm:w-64 px-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs outline-none focus:border-cyan transition" />
@@ -294,7 +307,7 @@ tailwind.config = {
           </div>
         </div>
 
-        <!-- DESKTOP TABLE (Hidden on mobile) -->
+        <!-- DESKTOP TABLE -->
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
@@ -314,7 +327,7 @@ tailwind.config = {
           </table>
         </div>
 
-        <!-- MOBILE CARDS CONTAINER (Visible only on mobile screens < 768px) -->
+        <!-- MOBILE CARDS CONTAINER -->
         <div id="users-mobile-cards" class="md:hidden space-y-3">
           <!-- Rendered via JS -->
         </div>
@@ -350,44 +363,38 @@ tailwind.config = {
         </div>
       </section>
 
+      <!-- LIVE ACTIVITY LOGS TAB -->
+      <section id="tab-logs" class="hidden glass-card p-4 sm:p-6 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-display font-extrabold text-xl text-white">Live Activity & Login Logs</h3>
+            <p class="text-xs text-gray-400 mt-1">Detailed timestamps, login attempts, IP locations & events</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-white/10 text-gray-400 font-mono uppercase text-[10px]">
+                <th class="py-3 px-4">DATE & TIME</th>
+                <th class="py-3 px-4">USER / EVENT</th>
+                <th class="py-3 px-4">ACTION</th>
+                <th class="py-3 px-4">IP LOCATION</th>
+                <th class="py-3 px-4">STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body" class="divide-y divide-white/5">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- ORGANIZATIONS TAB -->
       <section id="tab-orgs" class="hidden glass-card p-6 rounded-2xl space-y-4">
         <h3 class="font-display font-extrabold text-xl text-white">Organization Details</h3>
         <div id="orgs-card-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Rendered via JS -->
-        </div>
-      </section>
-
-      <!-- MOBILE APP PWA SETUP TAB -->
-      <section id="tab-mobile" class="hidden glass-card p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-6 text-center">
-        <div class="w-16 h-16 bg-cyan/10 border border-cyan/20 rounded-2xl flex items-center justify-center mx-auto text-3xl">📲</div>
-        <div>
-          <h3 class="font-display font-extrabold text-2xl text-white">Install ZONIX Admin on Phone</h3>
-          <p class="text-xs text-gray-400 mt-1">Add ZONIX Web Admin to your smartphone home screen as a standalone mobile app.</p>
-        </div>
-
-        <div class="text-left space-y-4 text-xs">
-          <div class="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
-            <div class="font-bold text-cyan text-sm flex items-center gap-2">
-              <span>📱 iOS (iPhone / iPad):</span>
-            </div>
-            <ol class="list-decimal list-inside text-gray-400 space-y-1.5 leading-relaxed">
-              <li>Open <strong>https://thezonix.com/admin.html</strong> in Safari.</li>
-              <li>Tap the <strong>Share</strong> button (bottom toolbar).</li>
-              <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-            </ol>
-          </div>
-
-          <div class="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
-            <div class="font-bold text-sky-400 text-sm flex items-center gap-2">
-              <span>🤖 Android (Chrome):</span>
-            </div>
-            <ol class="list-decimal list-inside text-gray-400 space-y-1.5 leading-relaxed">
-              <li>Open <strong>https://thezonix.com/admin.html</strong> in Chrome.</li>
-              <li>Tap the <strong>3 dots menu</strong> (top right).</li>
-              <li>Tap <strong>Install app</strong> or <strong>Add to Home Screen</strong>.</li>
-            </ol>
-          </div>
         </div>
       </section>
 
@@ -427,7 +434,7 @@ tailwind.config = {
         </div>
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Max Tabs</label>
-          <input type="number" id="add-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono" />
+          <input type="number" id="add-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono font-bold" />
         </div>
       </div>
 
@@ -436,6 +443,53 @@ tailwind.config = {
       <div class="flex gap-2 pt-2">
         <button type="button" onclick="closeAddUserModal()" class="flex-1 py-3 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
         <button type="submit" class="flex-1 py-3 btn-primary text-white rounded-xl text-xs font-bold">Create User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: EDIT DISPATCHER / MAX TABS -->
+<div id="modal-edit-user" class="hidden fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 z-50">
+  <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display font-extrabold text-xl text-white">✏️ Edit Dispatcher & Tab Limit</h3>
+      <button onclick="closeEditUserModal()" class="text-gray-400 hover:text-white p-1">✕</button>
+    </div>
+    
+    <form id="form-edit-user" class="space-y-3.5">
+      <input type="hidden" id="edit-user-id" />
+      <div>
+        <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Username</label>
+        <input type="text" id="edit-username" disabled class="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/5 text-gray-400 text-xs font-bold" />
+      </div>
+      <div>
+        <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Email</label>
+        <input type="email" id="edit-email" placeholder="dispatcher@company.com" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Role</label>
+          <select id="edit-role" class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-xs outline-none">
+            <option value="DISPATCHER">DISPATCHER</option>
+            <option value="MANAGER">MANAGER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Max Tabs Limit</label>
+          <input type="number" id="edit-maxtabs" min="1" max="50" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono font-bold" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">New Password (Leave blank to keep current)</label>
+        <input type="password" id="edit-password" placeholder="••••••••" minlength="8" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
+      </div>
+
+      <div id="edit-user-msg" class="hidden text-xs p-3 rounded-xl"></div>
+
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeEditUserModal()" class="flex-1 py-3 bg-white/5 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10">Cancel</button>
+        <button type="submit" class="flex-1 py-3 btn-cyan text-black rounded-xl text-xs font-black">Save Changes</button>
       </div>
     </form>
   </div>
@@ -451,6 +505,10 @@ tailwind.config = {
     
     <form id="form-invite" class="space-y-3.5">
       <div>
+        <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Target Organization</label>
+        <select id="invite-org-select" class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-cyan/30 text-cyan font-bold text-xs outline-none cursor-pointer"></select>
+      </div>
+      <div>
         <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Recipient Email</label>
         <input type="email" id="invite-email" required placeholder="dispatcher@company.com" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white text-xs outline-none focus:border-cyan" />
       </div>
@@ -464,7 +522,7 @@ tailwind.config = {
         </div>
         <div>
           <label class="block text-[10px] text-gray-400 font-mono uppercase mb-1">Max Tabs</label>
-          <input type="number" id="invite-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono" />
+          <input type="number" id="invite-maxtabs" min="1" max="50" value="5" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-cyan text-xs outline-none font-mono font-bold" />
         </div>
       </div>
 
@@ -486,6 +544,8 @@ tailwind.config = {
   let selectedOrgId = '';
   let users = [];
   let invites = [];
+  let sessions = [];
+  let logs = [];
 
   document.addEventListener('DOMContentLoaded', () => {
     if (authToken && authUser) {
@@ -567,7 +627,11 @@ tailwind.config = {
       if (res.ok && data.organizations) {
         orgs = data.organizations;
         const select = document.getElementById('org-select');
+        const inviteOrgSelect = document.getElementById('invite-org-select');
+        
         select.innerHTML = '';
+        inviteOrgSelect.innerHTML = '';
+
         orgs.forEach(o => {
           const opt = document.createElement('option');
           opt.value = o.id;
@@ -575,10 +639,15 @@ tailwind.config = {
           opt.style.background = '#0e1422';
           opt.style.color = '#ffffff';
           select.appendChild(opt);
+
+          const opt2 = opt.cloneNode(true);
+          inviteOrgSelect.appendChild(opt2);
         });
+
         if (orgs.length > 0) {
           selectedOrgId = orgs[0].id;
           select.value = selectedOrgId;
+          inviteOrgSelect.value = selectedOrgId;
           fetchDashboardData();
         }
       }
@@ -595,15 +664,22 @@ tailwind.config = {
   async function fetchDashboardData() {
     if (!selectedOrgId) return;
     try {
-      const [uRes, iRes] = await Promise.all([
+      const [uRes, iRes, sRes, lRes] = await Promise.all([
         fetch(`${BACKEND_URL}/users/${selectedOrgId}`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
-        fetch(`${BACKEND_URL}/invites/${selectedOrgId}`, { headers: { 'Authorization': `Bearer ${authToken}` } })
+        fetch(`${BACKEND_URL}/invites/${selectedOrgId}`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+        fetch(`${BACKEND_URL}/sessions/${selectedOrgId}`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+        fetch(`${BACKEND_URL}/events/${selectedOrgId}`, { headers: { 'Authorization': `Bearer ${authToken}` } })
       ]);
+
       const uData = await uRes.json();
       const iData = await iRes.json();
+      const sData = await sRes.json();
+      const lData = await lRes.json();
 
       if (uRes.ok && uData.users) users = uData.users;
       if (iRes.ok && iData.invites) invites = iData.invites;
+      if (sRes.ok && sData.sessions) sessions = sData.sessions;
+      if (lRes.ok && lData.events) logs = lData.events;
 
       renderDashboard();
     } catch (err) {
@@ -613,26 +689,53 @@ tailwind.config = {
 
   function renderDashboard() {
     const activeUsers = users.filter(u => u.status === 'ACTIVE').length;
+    const activeSessions = sessions.filter(s => s.status === 'ACTIVE').length;
     const pendingInvites = invites.filter(i => i.status === 'PENDING').length;
     const currentOrg = orgs.find(o => o.id === selectedOrgId);
 
+    document.getElementById('stat-active-sessions').textContent = activeSessions;
     document.getElementById('stat-total-users').textContent = users.length;
     document.getElementById('stat-active-users').textContent = `${activeUsers} Active Seats Allocated`;
     document.getElementById('stat-pending-invites').textContent = pendingInvites;
     document.getElementById('stat-target-url').textContent = currentOrg ? (currentOrg.targetUrl || 'https://power.dat.com') : 'DAT Load Board';
     document.getElementById('stat-org-name').textContent = currentOrg ? currentOrg.displayName : 'DAT Organization';
 
+    document.getElementById('session-count-badge').textContent = activeSessions;
     document.getElementById('user-count-badge').textContent = users.length;
     document.getElementById('invite-count-badge').textContent = pendingInvites;
 
-    // Filtered users search
+    // 1. RENDER ACTIVE SESSIONS TABLE
+    const sBody = document.getElementById('sessions-table-body');
+    sBody.innerHTML = '';
+    const activeSessionList = sessions.filter(s => s.status === 'ACTIVE');
+    if (activeSessionList.length === 0) {
+      sBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500 font-medium">No active connected sessions right now. Dispatchers log in via app.</td></tr>';
+    } else {
+      activeSessionList.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-white/5 hover:bg-white/[0.02] transition';
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 font-bold text-white">${s.user?.username || 'Dispatcher'}</td>
+          <td class="py-3.5 px-4 text-cyan font-mono">${s.targetUrl || currentOrg?.targetUrl || 'https://power.dat.com'}</td>
+          <td class="py-3.5 px-4 text-gray-400 font-mono text-[11px]">${s.ipAddress || '127.0.0.1'} (${s.location?.city || 'Local'})</td>
+          <td class="py-3.5 px-4 text-gray-400 text-[11px]">${new Date(s.startedAt).toLocaleString()}</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              🟢 LIVE CONNECTED
+            </span>
+          </td>
+        `;
+        sBody.appendChild(tr);
+      });
+    }
+
+    // 2. RENDER USERS TABLE
     const searchQuery = (document.getElementById('user-search')?.value || '').toLowerCase();
     const filteredUsers = users.filter(u => 
       u.username.toLowerCase().includes(searchQuery) || 
       (u.email && u.email.toLowerCase().includes(searchQuery))
     );
 
-    // 1. RENDER DESKTOP TABLE
     const uBody = document.getElementById('users-table-body');
     uBody.innerHTML = '';
     if (filteredUsers.length === 0) {
@@ -657,6 +760,9 @@ tailwind.config = {
           </td>
           <td class="py-3.5 px-4 text-gray-500 text-[11px]">${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : 'Never'}</td>
           <td class="py-3.5 px-4 text-right space-x-1">
+            <button onclick="openEditUserModal('${u.id}', '${u.username}', '${u.email || ''}', '${u.role}', ${u.maxTabs || 5})" class="bg-cyan/10 hover:bg-cyan/20 text-cyan border border-cyan/20 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">
+              ✏️ Edit
+            </button>
             <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="bg-white/5 hover:bg-white/10 ${u.status === 'ACTIVE' ? 'text-amber-400 border-amber-500/20' : 'text-emerald-400 border-emerald-500/20'} border px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">
               ${u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
             </button>
@@ -669,7 +775,7 @@ tailwind.config = {
       });
     }
 
-    // 2. RENDER MOBILE CARDS (For Mobile Screen Resolution)
+    // 3. RENDER MOBILE CARDS
     const mCards = document.getElementById('users-mobile-cards');
     mCards.innerHTML = '';
     if (filteredUsers.length === 0) {
@@ -706,10 +812,13 @@ tailwind.config = {
           </div>
 
           <div class="flex gap-2 pt-1">
-            <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="flex-1 py-2 rounded-xl text-xs font-bold border transition ${u.status === 'ACTIVE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}">
-              ${u.status === 'ACTIVE' ? 'Suspend Access' : 'Activate Access'}
+            <button onclick="openEditUserModal('${u.id}', '${u.username}', '${u.email || ''}', '${u.role}', ${u.maxTabs || 5})" class="flex-1 py-2 rounded-xl text-xs font-bold bg-cyan/10 text-cyan border border-cyan/20 hover:bg-cyan/20 transition">
+              ✏️ Edit Limits
             </button>
-            <button onclick="deleteUser('${u.id}', '${u.username}')" class="px-4 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">
+            <button onclick="toggleUserStatus('${u.id}', '${u.status}')" class="flex-1 py-2 rounded-xl text-xs font-bold border transition ${u.status === 'ACTIVE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}">
+              ${u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
+            </button>
+            <button onclick="deleteUser('${u.id}', '${u.username}')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">
               Delete
             </button>
           </div>
@@ -718,7 +827,7 @@ tailwind.config = {
       });
     }
 
-    // Render Invites Table
+    // 4. RENDER INVITATIONS TABLE
     const iBody = document.getElementById('invites-table-body');
     iBody.innerHTML = '';
     if (invites.length === 0) {
@@ -738,7 +847,31 @@ tailwind.config = {
       });
     }
 
-    // Render Orgs Grid
+    // 5. RENDER LOGS TABLE
+    const lBody = document.getElementById('logs-table-body');
+    lBody.innerHTML = '';
+    if (logs.length === 0) {
+      lBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500 font-medium font-mono">No audit logs recorded yet.</td></tr>';
+    } else {
+      logs.forEach(l => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-white/5 hover:bg-white/[0.02] transition';
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 text-gray-400 font-mono text-[11px]">${new Date(l.createdAt).toLocaleString()}</td>
+          <td class="py-3.5 px-4 font-bold text-white">${l.details?.username || 'System'}</td>
+          <td class="py-3.5 px-4 text-cyan font-mono text-[11px]">${l.action}</td>
+          <td class="py-3.5 px-4 text-gray-400 font-mono text-[11px]">${l.details?.city || 'Local'} (${l.ipAddress || '127.0.0.1'})</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.details?.success !== false ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">
+              ${l.details?.success !== false ? 'SUCCESS' : 'FAILED'}
+            </span>
+          </td>
+        `;
+        lBody.appendChild(tr);
+      });
+    }
+
+    // 6. RENDER ORGS GRID
     const oGrid = document.getElementById('orgs-card-grid');
     oGrid.innerHTML = '';
     orgs.forEach(o => {
@@ -776,7 +909,7 @@ tailwind.config = {
       }
     });
 
-    ['overview', 'users', 'invites', 'orgs', 'mobile'].forEach(t => {
+    ['overview', 'sessions', 'users', 'invites', 'logs', 'orgs'].forEach(t => {
       const sec = document.getElementById(`tab-${t}`);
       if (sec) {
         if (t === tab) {
@@ -816,6 +949,58 @@ tailwind.config = {
   function closeAddUserModal() { document.getElementById('modal-add-user').classList.add('hidden'); }
   function openInviteModal() { document.getElementById('modal-invite').classList.remove('hidden'); }
   function closeInviteModal() { document.getElementById('modal-invite').classList.add('hidden'); }
+
+  function openEditUserModal(id, username, email, role, maxTabs) {
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('edit-username').value = username;
+    document.getElementById('edit-email').value = email;
+    document.getElementById('edit-role').value = role;
+    document.getElementById('edit-maxtabs').value = maxTabs;
+    document.getElementById('modal-edit-user').classList.remove('hidden');
+  }
+  function closeEditUserModal() { document.getElementById('modal-edit-user').classList.add('hidden'); }
+
+  // SUBMIT EDIT USER FORM
+  document.getElementById('form-edit-user').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userId = document.getElementById('edit-user-id').value;
+    const msg = document.getElementById('edit-user-msg');
+    msg.classList.add('hidden');
+
+    const payload = {
+      email: document.getElementById('edit-email').value,
+      role: document.getElementById('edit-role').value,
+      maxTabs: Number(document.getElementById('edit-maxtabs').value)
+    };
+    const newPass = document.getElementById('edit-password').value;
+    if (newPass && newPass.trim()) payload.password = newPass.trim();
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/${selectedOrgId}/${userId}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        msg.textContent = data.error || 'Failed to update user';
+        msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
+        msg.classList.remove('hidden');
+        return;
+      }
+      msg.textContent = 'Dispatcher details & tab limit updated!';
+      msg.className = 'text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl';
+      msg.classList.remove('hidden');
+      setTimeout(() => {
+        closeEditUserModal();
+        fetchDashboardData();
+      }, 1000);
+    } catch (err) {
+      msg.textContent = 'Error updating user';
+      msg.className = 'text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl';
+      msg.classList.remove('hidden');
+    }
+  });
 
   document.getElementById('form-add-user').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -860,6 +1045,8 @@ tailwind.config = {
     const msg = document.getElementById('invite-msg');
     msg.classList.add('hidden');
 
+    const inviteOrgId = document.getElementById('invite-org-select').value || selectedOrgId;
+
     try {
       const res = await fetch(`${BACKEND_URL}/invites/send`, {
         method: 'POST',
@@ -868,7 +1055,7 @@ tailwind.config = {
           email: document.getElementById('invite-email').value,
           role: document.getElementById('invite-role').value,
           maxTabs: Number(document.getElementById('invite-maxtabs').value),
-          orgId: selectedOrgId
+          orgId: inviteOrgId
         })
       });
       const data = await res.json();
