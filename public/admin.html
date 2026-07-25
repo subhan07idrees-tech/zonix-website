@@ -267,10 +267,16 @@ tailwind.config = {
             <h3 class="font-display font-extrabold text-xl text-white">Live Connected Dispatcher Sessions</h3>
             <p class="text-xs text-gray-400 mt-1">Real-time monitoring of dispatchers currently logged in and using ZONIX</p>
           </div>
-          <button onclick="fetchDashboardData()" class="bg-white/5 hover:bg-white/10 text-cyan border border-cyan/20 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            <span>Refresh Live</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="killAllSessions()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <span>🚨 Kill All Sessions</span>
+            </button>
+            <button onclick="fetchDashboardData()" class="bg-white/5 hover:bg-white/10 text-cyan border border-cyan/20 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Refresh Live</span>
+            </button>
+          </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -282,6 +288,7 @@ tailwind.config = {
                 <th class="py-3 px-4">LOCATION & IP</th>
                 <th class="py-3 px-4">CONNECTED AT</th>
                 <th class="py-3 px-4">STATUS</th>
+                <th class="py-3 px-4 text-right">ACTIONS</th>
               </tr>
             </thead>
             <tbody id="sessions-table-body" class="divide-y divide-white/5">
@@ -709,7 +716,7 @@ tailwind.config = {
     sBody.innerHTML = '';
     const activeSessionList = sessions.filter(s => s.status === 'ACTIVE');
     if (activeSessionList.length === 0) {
-      sBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500 font-medium">No active connected sessions right now. Dispatchers log in via app.</td></tr>';
+      sBody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500 font-medium">No active connected sessions right now. Dispatchers log in via app.</td></tr>';
     } else {
       activeSessionList.forEach(s => {
         const tr = document.createElement('tr');
@@ -723,6 +730,11 @@ tailwind.config = {
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               🟢 LIVE CONNECTED
             </span>
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            <button onclick="killSession('${s.id}', '${s.user?.username || 'Dispatcher'}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">
+              🔴 End Session
+            </button>
           </td>
         `;
         sBody.appendChild(tr);
@@ -919,6 +931,36 @@ tailwind.config = {
         }
       }
     });
+  }
+
+  async function killSession(sessionId, username) {
+    if (!confirm(`Disconnect live active session for "${username}"?`)) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) fetchDashboardData();
+    } catch (err) { console.error(err); }
+  }
+
+  async function killAllSessions() {
+    const activeList = sessions.filter(s => s.status === 'ACTIVE');
+    if (activeList.length === 0) {
+      alert("No active connected sessions right now.");
+      return;
+    }
+    if (!confirm(`🚨 TERMINATE ALL ${activeList.length} ACTIVE DISPATCHER SESSIONS? This will force-disconnect all active app sessions.`)) return;
+
+    try {
+      await Promise.all(activeList.map(s => 
+        fetch(`${BACKEND_URL}/sessions/${s.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        })
+      ));
+      fetchDashboardData();
+    } catch (err) { console.error(err); }
   }
 
   async function toggleUserStatus(userId, currentStatus) {
