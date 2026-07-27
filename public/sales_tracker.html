@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sales Record Tracker — ZONIX OS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { background: #0b0f19; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+</style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass p-6 rounded-2xl">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center font-bold text-black text-xl">📊</div>
+          <div>
+            <h1 class="font-display font-extrabold text-2xl text-white">Sales Record Dashboard</h1>
+            <p class="text-xs text-gray-400">Track orders, calculate net revenue, and export directly to Google Sheets</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="exportToCSV()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>Export for Google Sheets (.CSV)</span>
+        </button>
+        <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition">
+          + Add New Sale
+        </button>
+      </div>
+    </div>
+
+    <!-- METRICS CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="glass p-5 rounded-2xl">
+        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">TOTAL REVENUE</div>
+        <div id="stat-revenue" class="text-3xl font-display font-extrabold text-emerald-400">$0.00</div>
+        <div class="text-xs text-gray-400 mt-1">Gross sales amount</div>
+      </div>
+
+      <div class="glass p-5 rounded-2xl">
+        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">NET REVENUE</div>
+        <div id="stat-net" class="text-3xl font-display font-extrabold text-cyan-400">$0.00</div>
+        <div class="text-xs text-gray-400 mt-1">After discounts applied</div>
+      </div>
+
+      <div class="glass p-5 rounded-2xl">
+        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">TOTAL SALES COUNT</div>
+        <div id="stat-count" class="text-3xl font-display font-extrabold text-white">0</div>
+        <div class="text-xs text-gray-400 mt-1">Completed transactions</div>
+      </div>
+
+      <div class="glass p-5 rounded-2xl">
+        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">PENDING PAYMENTS</div>
+        <div id="stat-pending" class="text-3xl font-display font-extrabold text-yellow-400">$0.00</div>
+        <div class="text-xs text-gray-400 mt-1">Awaiting settlement</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="glass p-6 rounded-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-white">Recent Transactions</h3>
+        <input type="text" id="search" oninput="renderTable()" placeholder="Search client or product..." class="px-4 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-cyan-400" />
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-gray-400 font-mono text-[10px] uppercase">
+              <th class="py-3 px-3">DATE</th>
+              <th class="py-3 px-3">TXN ID</th>
+              <th class="py-3 px-3">CLIENT / COMPANY</th>
+              <th class="py-3 px-3">PRODUCT / SERVICE</th>
+              <th class="py-3 px-3">UNITS</th>
+              <th class="py-3 px-3">GROSS ($)</th>
+              <th class="py-3 px-3">DISCOUNT ($)</th>
+              <th class="py-3 px-3">NET REVENUE ($)</th>
+              <th class="py-3 px-3">STATUS</th>
+              <th class="py-3 px-3">REP</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-white/5"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const salesData = [
+      { date: '2026-07-01', id: 'TXN-1001', client: 'Apex Freight Lines', item: 'ZONIX Dispatch OS - Admin', units: 1, price: 299, discount: 0, status: 'Paid', rep: 'Subhan' },
+      { date: '2026-07-03', id: 'TXN-1002', client: 'Global Express Inc', item: 'ZONIX Dispatch Seats', units: 5, price: 49, discount: 25, status: 'Paid', rep: 'Alex' },
+      { date: '2026-07-05', id: 'TXN-1003', client: 'Swift Carriers LLC', item: 'Dedicated Proxy Tunnel', units: 2, price: 99, discount: 0, status: 'Paid', rep: 'Subhan' },
+      { date: '2026-07-10', id: 'TXN-1004', client: 'Vanguard Freight', item: 'ZONIX Enterprise Unlimited', units: 1, price: 899, discount: 100, status: 'Paid', rep: 'Sarah' },
+      { date: '2026-07-15', id: 'TXN-1005', client: 'Horizon Logistics', item: 'ZONIX Dispatch Seats', units: 10, price: 45, discount: 50, status: 'Pending', rep: 'Alex' },
+      { date: '2026-07-18', id: 'TXN-1006', client: 'Titan Transports', item: 'Session Anti-Detect Addon', units: 3, price: 79, discount: 0, status: 'Paid', rep: 'Subhan' },
+      { date: '2026-07-22', id: 'TXN-1007', client: 'Pinnacle Freight', item: 'ZONIX Dispatch OS - Admin', units: 1, price: 299, discount: 20, status: 'Paid', rep: 'Sarah' },
+      { date: '2026-07-25', id: 'TXN-1008', client: 'Eagle Transport', item: 'ZONIX Dispatch Seats', units: 8, price: 49, discount: 42, status: 'Pending', rep: 'Alex' }
+    ];
+
+    function renderTable() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const body = document.getElementById('table-body');
+      body.innerHTML = '';
+
+      let totalGross = 0;
+      let totalNet = 0;
+      let pendingNet = 0;
+
+      const filtered = salesData.filter(s => 
+        s.client.toLowerCase().includes(q) || 
+        s.item.toLowerCase().includes(q) || 
+        s.id.toLowerCase().includes(q)
+      );
+
+      filtered.forEach(s => {
+        const gross = s.units * s.price;
+        const net = gross - s.discount;
+
+        totalGross += gross;
+        totalNet += net;
+        if (s.status === 'Pending') pendingNet += net;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-white/[0.02] transition';
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-gray-400 font-mono">${s.date}</td>
+          <td class="py-3 px-3 font-mono font-bold text-cyan-400">${s.id}</td>
+          <td class="py-3 px-3 font-bold text-white">${s.client}</td>
+          <td class="py-3 px-3 text-gray-300">${s.item}</td>
+          <td class="py-3 px-3 font-mono text-gray-300">${s.units}</td>
+          <td class="py-3 px-3 font-mono text-gray-300">$${gross.toFixed(2)}</td>
+          <td class="py-3 px-3 font-mono text-red-400">-$${s.discount.toFixed(2)}</td>
+          <td class="py-3 px-3 font-mono font-bold text-emerald-400">$${net.toFixed(2)}</td>
+          <td class="py-3 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'}">
+              ${s.status}
+            </span>
+          </td>
+          <td class="py-3 px-3 text-gray-400">${s.rep}</td>
+        `;
+        body.appendChild(tr);
+      });
+
+      document.getElementById('stat-revenue').textContent = `$${totalGross.toFixed(2)}`;
+      document.getElementById('stat-net').textContent = `$${totalNet.toFixed(2)}`;
+      document.getElementById('stat-count').textContent = filtered.length;
+      document.getElementById('stat-pending').textContent = `$${pendingNet.toFixed(2)}`;
+    }
+
+    function exportToCSV() {
+      const headers = ['Date', 'Transaction ID', 'Client Name', 'Product / Service', 'Units', 'Unit Price', 'Gross Sales', 'Discount', 'Net Revenue', 'Status', 'Sales Rep'];
+      const rows = salesData.map(s => [
+        s.date,
+        s.id,
+        `"${s.client}"`,
+        `"${s.item}"`,
+        s.units,
+        s.price,
+        (s.units * s.price).toFixed(2),
+        s.discount.toFixed(2),
+        (s.units * s.price - s.discount).toFixed(2),
+        s.status,
+        s.rep
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `ZONIX_Sales_Record_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
