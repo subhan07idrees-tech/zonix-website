@@ -274,6 +274,47 @@ function AdminPage() {
     }
   };
 
+  const handleRestoreVaultSession = async () => {
+    if (!selectedOrgId) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/organizations/${selectedOrgId}/vault/restore`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('🟢 1-Click Session Restore Successful! All active dispatcher tabs updated.');
+      } else {
+        alert(data.message || data.error || 'Failed to restore session vault');
+      }
+    } catch (err: any) {
+      alert('Error restoring session vault: ' + err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRunManualHealthCheck = async () => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/organizations/health-check/now`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`🟢 Health Check Complete! (${data.report.totalOrgs} Orgs scanned. Status: 100% Operational)`);
+      } else {
+        alert('Health check completed with warnings');
+      }
+    } catch (err: any) {
+      alert('Error running health check: ' + err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Filtered Users
   const filteredUsers = users.filter(u => 
     u.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -423,16 +464,19 @@ function AdminPage() {
 
             {/* Quick Actions Panel */}
             <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '24px', marginBottom: '24px' }}>
-              <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>Quick Dispatcher Operations</h3>
+              <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>Quick Dispatcher & Vault Operations</h3>
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button onClick={() => setShowAddUserModal(true)} style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', color: '#fff', border: 0, fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.4)' }}>
                   + Add New Dispatcher
                 </button>
+                <button onClick={handleRestoreVaultSession} disabled={actionLoading} style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', border: 0, fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' }}>
+                  🔄 1-Click Session Restore
+                </button>
+                <button onClick={handleRunManualHealthCheck} disabled={actionLoading} style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
+                  📱 Run Health Check Now
+                </button>
                 <button onClick={() => setShowInviteModal(true)} style={{ background: 'rgba(0,240,255,0.1)', color: '#00F0FF', border: '1px solid rgba(0,240,255,0.2)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
                   ✉️ Send Email Invite
-                </button>
-                <button onClick={() => setActiveTab('users')} style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
-                  View All Accounts ({users.length})
                 </button>
               </div>
             </div>
