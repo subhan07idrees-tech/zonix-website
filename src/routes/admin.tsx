@@ -509,7 +509,7 @@ function AdminPage() {
             {/* Quick Actions Panel */}
             <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '24px', marginBottom: '24px' }}>
               <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '18px', color: '#fff', margin: '0 0 16px 0' }}>Quick Dispatcher & Vault Operations</h3>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
                 <button onClick={() => setShowAddUserModal(true)} style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', color: '#fff', border: 0, fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.4)' }}>
                   + Add New Dispatcher
                 </button>
@@ -522,6 +522,34 @@ function AdminPage() {
                 <button onClick={() => setShowInviteModal(true)} style={{ background: 'rgba(0,240,255,0.1)', color: '#00F0FF', border: '1px solid rgba(0,240,255,0.2)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
                   ✉️ Send Email Invite
                 </button>
+              </div>
+
+              {/* Notification Channels Configuration */}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', marginBottom: '14px' }}>
+                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#38BDF8', fontFamily: 'monospace', textTransform: 'uppercase', margin: 0 }}>📱 Pre-Shift Health Alert Notification Channels</h4>
+                  <span style={{ fontSize: '11px', color: '#10b981', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', padding: '2px 10px', borderRadius: '12px', fontFamily: 'monospace' }}>● Meta WhatsApp Cloud API Active</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                  <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>WHATSAPP ALERT PHONE</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>+1 (404) 610-1615</div>
+                    <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>1,000 Free Messages / Mo</div>
+                  </div>
+
+                  <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>NOTIFICATION EMAIL</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>admin@thezonix.com</div>
+                    <div style={{ fontSize: '11px', color: '#38BDF8', marginTop: '4px' }}>Resend API Verified</div>
+                  </div>
+
+                  <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>DAILY SCAN SCHEDULE</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>07:45 AM EST</div>
+                    <div style={{ fontSize: '11px', color: '#f59e0b', marginTop: '4px' }}>Pre-Shift Morning Scan</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
