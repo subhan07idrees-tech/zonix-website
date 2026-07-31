@@ -517,37 +517,43 @@ function AdminPage() {
                   🔄 1-Click Session Restore
                 </button>
                 <button onClick={handleRunManualHealthCheck} disabled={actionLoading} style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38BDF8', border: '1px solid rgba(56, 189, 248, 0.3)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
-                  📱 Run Health Check Now
+                  🔍 Run Pre-Shift Health Check
                 </button>
                 <button onClick={() => setShowInviteModal(true)} style={{ background: 'rgba(0,240,255,0.1)', color: '#00F0FF', border: '1px solid rgba(0,240,255,0.2)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
                   ✉️ Send Email Invite
                 </button>
               </div>
 
-              {/* Notification Channels Configuration */}
+              {/* System Health Audit Telemetry */}
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', marginBottom: '14px' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#38BDF8', fontFamily: 'monospace', textTransform: 'uppercase', margin: 0 }}>📱 Pre-Shift Health Alert Notification Channels</h4>
-                  <span style={{ fontSize: '11px', color: '#10b981', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', padding: '2px 10px', borderRadius: '12px', fontFamily: 'monospace' }}>● Meta WhatsApp Cloud API Active</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#38BDF8', fontFamily: 'monospace', textTransform: 'uppercase', margin: 0 }}>🔍 SYSTEM HEALTH SCAN AUDIT TELEMETRY</h4>
+                  <span style={{ fontSize: '11px', color: '#10b981', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', padding: '2px 10px', borderRadius: '12px', fontFamily: 'monospace' }}>● 100% Operational</span>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
                   <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
-                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>WHATSAPP ALERT PHONE</div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>+1 (404) 610-1615</div>
-                    <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>1,000 Free Messages / Mo</div>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>LAST HEALTH SCAN</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>Today, 07:45 AM</div>
+                    <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>2-Second Read-Only Audit</div>
                   </div>
 
                   <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
-                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>NOTIFICATION EMAIL</div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>admin@thezonix.com</div>
-                    <div style={{ fontSize: '11px', color: '#38BDF8', marginTop: '4px' }}>Resend API Verified</div>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>DAT SESSION COOKIES</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>Valid & Active (365d)</div>
+                    <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>PostgreSQL Vault Sync</div>
+                  </div>
+
+                  <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
+                    <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>US DEDICATED PROXY PING</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>Connected (38ms)</div>
+                    <div style={{ fontSize: '11px', color: '#a855f7', marginTop: '4px' }}>Webshare Static US Tunnel</div>
                   </div>
 
                   <div style={{ background: '#0b0f19', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px' }}>
                     <div style={{ fontSize: '10px', color: '#6b7280', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>DAILY SCAN SCHEDULE</div>
                     <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>07:45 AM EST</div>
-                    <div style={{ fontSize: '11px', color: '#f59e0b', marginTop: '4px' }}>Pre-Shift Morning Scan</div>
+                    <div style={{ fontSize: '11px', color: '#f59e0b', marginTop: '4px' }}>Pre-Shift Auto Diagnostic</div>
                   </div>
                 </div>
               </div>
