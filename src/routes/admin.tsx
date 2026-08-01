@@ -46,6 +46,12 @@ function AdminPage() {
   const [inviteRole, setInviteRole] = useState('DISPATCHER');
   const [inviteMaxTabs, setInviteMaxTabs] = useState(5);
 
+  // Broadcast States
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false);
+  const [broadcastSubject, setBroadcastSubject] = useState('');
+  const [broadcastText, setBroadcastText] = useState('');
+  const [broadcasting, setBroadcasting] = useState(false);
+
   useEffect(() => {
     const savedToken = localStorage.getItem('zonix_admin_token');
     const savedUser = localStorage.getItem('zonix_admin_user');
@@ -522,6 +528,9 @@ function AdminPage() {
                 <button onClick={() => setShowInviteModal(true)} style={{ background: 'rgba(0,240,255,0.1)', color: '#00F0FF', border: '1px solid rgba(0,240,255,0.2)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
                   ✉️ Send Email Invite
                 </button>
+                <button onClick={() => setShowBroadcastModal(true)} style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)', fontWeight: 700, fontSize: '13px', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer' }}>
+                  📢 Mass Maintenance Broadcast
+                </button>
               </div>
 
               {/* System Health Audit Telemetry */}
@@ -815,6 +824,63 @@ function AdminPage() {
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button type="button" onClick={() => setShowInviteModal(false)} style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', color: '#9ca3af', border: 0, borderRadius: '10px', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
                 <button type="submit" disabled={actionLoading} style={{ flex: 1, padding: '12px', background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', color: '#fff', border: 0, borderRadius: '10px', cursor: 'pointer', fontWeight: 700 }}>{actionLoading ? 'Sending...' : 'Send Invitation'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: MASS MAINTENANCE BROADCAST */}
+      {showBroadcastModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '480px', padding: '32px', boxSizing: 'border-box' }}>
+            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '20px', color: '#f59e0b', margin: '0 0 8px 0' }}>📢 Mass System Announcement</h3>
+            <p style={{ fontSize: '12px', color: '#9ca3af', margin: '0 0 16px 0' }}>Broadcast updates or maintenance notices via <strong>support.zonix@gmail.com</strong></p>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!broadcastSubject || !broadcastText) return;
+              setBroadcasting(true);
+              try {
+                const res = await fetch(`${BACKEND_URL}/support/broadcast`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ subject: broadcastSubject, announcementText: broadcastText })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  setModalSuccess(`Broadcast email sent to ${data.count || 0} users!`);
+                  setBroadcastSubject('');
+                  setBroadcastText('');
+                  setTimeout(() => setShowBroadcastModal(false), 2000);
+                } else {
+                  setModalError(data.error || 'Failed to send broadcast');
+                }
+              } catch (err: any) {
+                setModalError(err.message || 'Network error sending broadcast');
+              } finally {
+                setBroadcasting(false);
+              }
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>Notice Subject</label>
+                <input type="text" required placeholder="e.g. Scheduled System Maintenance Tonight" value={broadcastSubject} onChange={(e) => setBroadcastSubject(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace', textTransform: 'uppercase', marginBottom: '4px' }}>Announcement Message</label>
+                <textarea rows={4} required placeholder="Enter maintenance schedule or platform update details..." value={broadcastText} onChange={(e) => setBroadcastText(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              {modalError && <div style={{ fontSize: '12px', color: '#f87171' }}>{modalError}</div>}
+              {modalSuccess && <div style={{ fontSize: '12px', color: '#34d399' }}>{modalSuccess}</div>}
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button type="button" onClick={() => setShowBroadcastModal(false)} style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', color: '#9ca3af', border: 0, borderRadius: '10px', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
+                <button type="submit" disabled={broadcasting} style={{ flex: 1, padding: '12px', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#fff', border: 0, borderRadius: '10px', cursor: 'pointer', fontWeight: 700 }}>{broadcasting ? 'Broadcasting...' : 'Broadcast Announcement'}</button>
               </div>
             </form>
           </div>
