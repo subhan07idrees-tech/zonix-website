@@ -197,8 +197,8 @@ function JoinPage() {
                 If clicking the button does not launch the app, open <strong>ZONIX Dispatcher</strong> from your Windows Start Menu or Desktop and log in with your credentials above.
               </p>
 
-              <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.8.20/ZONIX-Dispatcher-Setup-1.8.20.exe" style={{ fontSize: '12px', color: '#00F0FF', textDecoration: 'underline' }}>
-                Need to install? Download ZONIX App (v1.8.20)
+              <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.1/ZONIX-Dispatcher-Setup-1.9.1.exe" style={{ fontSize: '12px', color: '#00F0FF', textDecoration: 'underline' }}>
+                Need to install? Download ZONIX App (v1.9.1)
               </a>
             </div>
           )}
