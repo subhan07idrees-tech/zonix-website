@@ -1,587 +1,629 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ZONIX — Enterprise Session Virtualization &amp; Egress OS</title>
-<meta name="description" content="ZONIX is the next-generation secure session-sharing, anti-detect browser platform for freight dispatchers. Zero login bans, zero leaked credentials, dedicated secure tunnels."/>
+<title>ZONIX — Enterprise Session OS &amp; Multi-Seat Dispatch Platform</title>
+<meta name="description" content="ZONIX is the enterprise session virtualization and anti-detect browser platform for freight dispatchers. Run your own DAT loadboard across your entire fleet with zero login bans, zero leaked credentials, and dedicated residential tunnels."/>
+<link rel="icon" type="image/png" href="/zonix-logo.png" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
 tailwind.config = {
   theme: {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
-        ink: '#06080F',
-        panel: '#0B0F19',
-        card: '#0E1322',
-        surface: '#141A2D',
-        cyan: '#00F0FF',
-        blue: {
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
+        canvas: '#07090E',
+        panel: '#0D111A',
+        card: '#111723',
+        elevated: '#172032',
+        accent: {
+          DEFAULT: '#2B59FF',
+          hover: '#1E44D6',
+          light: '#4D75FF',
+          subtle: 'rgba(43, 89, 255, 0.12)',
         },
+        telemetry: {
+          emerald: '#10B981',
+          emeraldSubtle: 'rgba(16, 185, 129, 0.12)',
+          amber: '#F59E0B',
+          rose: '#EF4444',
+        }
       },
+      letterSpacing: {
+        tightest: '-0.035em',
+        tighter: '-0.02em',
+      }
     }
   }
 }
 </script>
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
+  :root {
+    --canvas: #07090E;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-border-hover: rgba(43, 89, 255, 0.4);
+    --accent: #2B59FF;
+  }
   html { scroll-behavior: smooth; }
   body {
-    background: #06080F;
-    color: #F3F4F6;
+    background-color: var(--canvas);
+    color: #E2E8F0;
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
+    letter-spacing: -0.01em;
   }
-  .font-display { font-family: 'Outfit', sans-serif; }
-  .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-  /* Background glow meshes */
-  .hero-glow-1 {
+  /* Architectural Ambient Lighting - Restrained, non-neon */
+  .spotlight-top {
     position: absolute;
-    width: 650px;
-    height: 650px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, rgba(6, 8, 15, 0) 70%);
+    width: 900px;
+    height: 500px;
     top: -150px;
-    left: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at 50% 30%, rgba(43, 89, 255, 0.16) 0%, rgba(7, 9, 14, 0) 70%);
+    filter: blur(80px);
     pointer-events: none;
-    filter: blur(40px);
+    z-index: 0;
   }
-  .hero-glow-2 {
+
+  .spotlight-subtle {
     position: absolute;
-    width: 550px;
-    height: 550px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.16) 0%, rgba(6, 8, 15, 0) 70%);
-    top: 150px;
-    right: -100px;
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(43, 89, 255, 0.08) 0%, rgba(7, 9, 14, 0) 70%);
+    filter: blur(70px);
     pointer-events: none;
-    filter: blur(50px);
   }
 
-  /* Grid & Subtle Scanlines */
-  .bg-grid-cyber {
-    background-image:
-      linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-    background-size: 40px 40px;
+  /* Bespoke Architectural Borders & Panels */
+  .arch-panel {
+    background: #0D111A;
+    border: 1px solid var(--card-border);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .arch-panel:hover {
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
-  /* Glassmorphism Classes */
-  .glass {
-    background: rgba(14, 19, 34, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+  .arch-card {
+    background: linear-gradient(180deg, rgba(17, 23, 35, 0.95) 0%, rgba(13, 17, 26, 0.98) 100%);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .glass-card {
-    background: linear-gradient(180deg, rgba(17, 24, 43, 0.75) 0%, rgba(11, 15, 26, 0.85) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6);
-  }
-  .glass-card:hover {
-    border-color: rgba(0, 240, 255, 0.35);
-    box-shadow: 0 25px 60px -15px rgba(0, 240, 255, 0.15);
+  .arch-card:hover {
+    border-color: var(--card-border-hover);
+    box-shadow: 0 20px 40px -15px rgba(43, 89, 255, 0.15);
   }
 
-  /* Button Styles */
-  .btn-primary {
-    background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #00F0FF 100%);
-    background-size: 200% 200%;
+  /* Subtle Fine Dot Texture (Professional, not harsh cyber lines) */
+  .bg-subtle-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* High-Trust Precision Buttons */
+  .btn-command {
+    background: #2B59FF;
     color: #FFFFFF;
-    font-weight: 700;
-    transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 10px 28px -8px rgba(37, 99, 235, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 18px -2px rgba(43, 89, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    background-position: 100% 100%;
-    box-shadow: 0 16px 36px -8px rgba(0, 240, 255, 0.5);
+  .btn-command:hover {
+    background: #1E44D6;
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 24px -3px rgba(43, 89, 255, 0.6);
   }
 
-  .btn-outline {
+  .btn-ghost-panel {
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: #E2E8F0;
-    transition: all .25s ease;
+    font-weight: 600;
+    transition: all 0.2s ease;
   }
-  .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(0, 240, 255, 0.4);
+  .btn-ghost-panel:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.2);
     color: #FFFFFF;
-    box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.3);
   }
 
-  /* Text Gradients */
-  .text-gradient {
-    background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 45%, #00F0FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .text-gradient-cyan {
-    background: linear-gradient(135deg, #00F0FF 0%, #38BDF8 50%, #60A5FA 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* Beacon Animation */
-  @keyframes beaconGlow {
+  /* Pulsing live status beacon */
+  @keyframes statusPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(1.2); }
+    50% { opacity: 0.4; transform: scale(1.15); }
   }
-  .beacon-active {
-    animation: beaconGlow 1.8s infinite;
+  .beacon-dot {
+    animation: statusPulse 2s infinite ease-in-out;
   }
 
   /* Slider Customization */
   input[type=range] {
     -webkit-appearance: none;
     width: 100%;
-    background: #1E293B;
-    height: 8px;
-    border-radius: 4px;
+    background: #172032;
+    height: 6px;
+    border-radius: 9999px;
     outline: none;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: #00F0FF;
+    background: #2B59FF;
     cursor: pointer;
-    box-shadow: 0 0 14px #00F0FF;
+    box-shadow: 0 0 10px rgba(43, 89, 255, 0.6);
     border: 2px solid #FFFFFF;
+    transition: transform 0.15s ease;
+  }
+  input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
   }
 
-  /* Accordion chevron */
+  /* Custom FAQ Details */
+  details > summary::-webkit-details-marker { display: none; }
   details[open] > summary .faq-icon {
     transform: rotate(180deg);
-    color: #00F0FF;
+  }
+  details[open] {
+    border-color: rgba(43, 89, 255, 0.35);
+    background: #111723;
   }
 </style>
 </head>
-<body class="antialiased selection:bg-cyan selection:text-ink">
+<body class="antialiased selection:bg-accent selection:text-white">
 
-<!-- TOP NAV -->
+<!-- TOP AMBIENT SPOTLIGHT -->
+<div class="spotlight-top"></div>
+
+<!-- NAVIGATION BAR -->
 <header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
-    <div class="glass rounded-2xl flex items-center justify-between px-4 sm:px-6 py-3 border border-white/10 shadow-xl">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3.5">
+    <div class="arch-panel rounded-2xl px-5 py-3 flex items-center justify-between backdrop-blur-xl bg-[#080B12]/85 border border-white/10 shadow-2xl">
+      
       <!-- Brand Logo -->
       <a href="#top" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E5B869] to-[#C5994A] p-0.5 shadow-lg shadow-[#E5B869]/20 group-hover:shadow-[#E5B869]/40 transition">
-          <div class="w-full h-full bg-[#0B0F19] rounded-[10px] flex items-center justify-center font-display font-extrabold text-white text-base">
-            Z
-          </div>
-        </div>
+        <img src="/zonix-logo.png" alt="ZONIX" class="w-8 h-8 rounded-lg object-contain bg-white/5 p-1 border border-white/10 group-hover:border-accent/60 transition" onerror="this.style.display='none'; document.getElementById('fallback-logo').classList.remove('hidden');" />
+        <div id="fallback-logo" class="hidden w-8 h-8 rounded-lg bg-accent flex items-center justify-center font-display font-black text-white text-base">Z</div>
         <div>
-          <div class="font-display font-extrabold tracking-tight text-lg text-white leading-none flex items-center gap-2">
+          <div class="font-display font-extrabold tracking-tight text-base sm:text-lg text-white leading-none flex items-center gap-2">
             ZONIX
-            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-cyan border border-blue-400/30 font-bold">OS</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-gray-300 border border-white/10 font-medium">SESSION OS</span>
           </div>
-          <div class="text-[9px] uppercase tracking-[0.2em] text-gray-400 leading-none mt-1 font-mono">Dispatcher Node</div>
+          <div class="text-[10px] tracking-wider text-gray-400 leading-none mt-1 font-sans">Multi-Seat Dispatch Protocol</div>
         </div>
       </a>
 
-      <!-- Navigation Links -->
-      <nav class="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-gray-300">
-        <a href="#dat-options" class="text-cyan hover:text-white transition flex items-center gap-1 font-bold">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan beacon-active"></span> DAT Access
+      <!-- Desktop Nav Navigation -->
+      <nav class="hidden md:flex items-center gap-8 text-xs font-medium text-gray-300">
+        <a href="#dat-options" class="hover:text-white transition flex items-center gap-1.5 font-semibold text-white">
+          <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald beacon-dot"></span> DAT Solutions
         </a>
-        <a href="#architecture" class="hover:text-cyan transition">Architecture</a>
-        <a href="#simulator" class="hover:text-cyan transition">Live Simulator</a>
-        <a href="#calculator" class="hover:text-cyan transition">ROI Calculator</a>
-        <a href="#security" class="hover:text-cyan transition">Zero-Leak Shield</a>
-        <a href="#faq" class="hover:text-cyan transition">FAQ</a>
+        <a href="#architecture" class="hover:text-white transition">Architecture</a>
+        <a href="#simulator" class="hover:text-white transition">Edge Telemetry</a>
+        <a href="#calculator" class="hover:text-white transition">ROI Calculator</a>
+        <a href="#security" class="hover:text-white transition">Zero-Leak Shield</a>
+        <a href="#faq" class="hover:text-white transition">FAQ</a>
       </nav>
 
-      <!-- Right Action CTAs -->
-      <div class="flex items-center gap-2.5">
-        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs text-gray-300 font-mono px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 beacon-active"></span> v1.9.30
+      <!-- Right CTAs -->
+      <div class="flex items-center gap-3">
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs text-gray-300 font-mono px-2.5 py-1 rounded-lg bg-white/5 border border-white/10">
+          <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald beacon-dot"></span> v1.9.30
         </span>
-        <button onclick="openAccessModal('general')" class="btn-outline rounded-xl px-3.5 py-2 text-xs font-bold inline-flex items-center gap-1.5 text-cyan border-cyan/40 hover:border-cyan hover:bg-cyan/10">
-          <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan"></i> Get Access
+        <button onclick="openAccessModal('general')" class="btn-ghost-panel rounded-xl px-3.5 py-2 text-xs font-semibold inline-flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-accent-light"></i> Get Access
         </button>
-        <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.30/ZONIX-Dispatcher-Setup-1.9.30.exe" class="btn-primary rounded-xl px-4 py-2 text-xs font-bold inline-flex items-center gap-2">
+        <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.22/ZONIX-Dispatcher-Setup-1.9.22.exe" class="btn-command rounded-xl px-4 py-2 text-xs font-semibold inline-flex items-center gap-2">
           <i data-lucide="download" class="w-3.5 h-3.5"></i> Download App
         </a>
       </div>
+
     </div>
   </div>
 </header>
 
 <!-- HERO SECTION -->
-<section id="top" class="relative pt-36 pb-20 lg:pt-44 lg:pb-32 overflow-hidden bg-grid-cyber">
-  <div class="hero-glow-1"></div>
-  <div class="hero-glow-2"></div>
-  <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink pointer-events-none"></div>
-
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid lg:grid-cols-12 gap-12 items-center">
+<section id="top" class="relative pt-36 pb-20 lg:pt-44 lg:pb-32 overflow-hidden bg-subtle-dots">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-14 items-center">
       
-      <!-- Hero Copy -->
-      <div class="lg:col-span-6" data-aos="fade-right" data-aos-duration="800">
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs font-mono text-cyan mb-6 border border-cyan/30 shadow-md">
-          <span class="w-2 h-2 rounded-full bg-cyan beacon-active"></span>
-          OFFICIAL DISPATCH PROTOCOL · ZERO-SUSPENSION GUARANTEE
+      <!-- Hero Left: Value Proposition -->
+      <div class="lg:col-span-6" data-aos="fade-up" data-aos-duration="700">
+        <!-- Live Operational Badge -->
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full arch-panel text-xs font-sans text-gray-200 mb-6 border border-white/10 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-telemetry-emerald beacon-dot"></span>
+          <span class="font-medium">Enterprise Multi-Seat Architecture · Zero Ban Guarantee</span>
         </div>
 
-        <h1 class="font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight text-white">
-          The Operating System for <span class="text-gradient">Freight Dispatch.</span>
+        <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tightest text-white">
+          The Operating System for Freight Dispatch Teams.
         </h1>
 
-        <p class="mt-6 text-base sm:text-lg text-gray-300 leading-relaxed max-w-xl">
-          <strong class="text-white">Run your own DAT with full admin control</strong> or <strong class="text-cyan">buy pre-verified DAT accounts</strong> ready to dispatch in minutes. Zero multi-login bans, zero account suspensions, and hardware-isolated multi-seat sharing for your entire team.
+        <p class="mt-6 text-base sm:text-lg text-gray-300 leading-relaxed font-normal max-w-xl">
+          <strong class="text-white font-semibold">Run your existing DAT loadboard across your whole team</strong> with full administrative authority, or <strong class="text-white font-semibold">deploy pre-verified managed accounts</strong> ready to dispatch immediately. Zero multi-login bans, zero credential leaks, and dedicated residential tunnel isolation.
         </p>
 
-        <!-- Main Action Buttons -->
+        <!-- Primary CTAs -->
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <button onclick="openAccessModal('buy')" class="btn-primary rounded-xl px-5 py-3.5 text-sm font-bold inline-flex items-center gap-2.5 shadow-lg shadow-cyan/25">
+          <button onclick="openAccessModal('buy')" class="btn-command rounded-xl px-5 py-3.5 text-sm font-semibold inline-flex items-center gap-2.5">
             <i data-lucide="zap" class="w-4 h-4"></i>
-            Buy or Mount DAT Account
+            Deploy or Mount DAT Account
           </button>
-          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.30/ZONIX-Dispatcher-Setup-1.9.30.exe" class="btn-outline rounded-xl px-4 py-3.5 text-sm font-semibold inline-flex items-center gap-2">
-            <i data-lucide="download" class="w-4 h-4 text-cyan"></i>
-            Download App (.exe)
+          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.22/ZONIX-Dispatcher-Setup-1.9.22.exe" class="btn-ghost-panel rounded-xl px-4 py-3.5 text-sm font-semibold inline-flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4 text-gray-300"></i>
+            Download Client (.exe)
           </a>
-          <a href="https://wa.me/14046101615?text=Hello%2C%20I'm%20interested%20in%20getting%20access%20to%20ZONIX%20(Buy%20DAT%20or%20Run%20My%20Own%20DAT)!" target="_blank" class="rounded-xl px-4 py-3.5 text-sm font-semibold inline-flex items-center gap-2 bg-[#128C7E]/90 hover:bg-[#128C7E] text-white transition shadow-lg shadow-[#128C7E]/20">
+          <a href="https://wa.me/14046101615?text=Hello%2C%20I'm%20interested%20in%20getting%20access%20to%20ZONIX%20(Buy%20DAT%20or%20Run%20My%20Own%20DAT)!" target="_blank" class="rounded-xl px-4 py-3.5 text-sm font-semibold inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7064] text-white transition shadow-lg shadow-[#128C7E]/20">
             <i data-lucide="message-square" class="w-4 h-4"></i>
             WhatsApp Desk
           </a>
         </div>
 
         <!-- Telemetry Spec Highlights -->
-        <div class="mt-10 grid grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs text-gray-400 font-mono">
+        <div class="mt-10 grid grid-cols-3 gap-6 pt-6 border-t border-white/10 text-xs text-gray-400">
           <div>
-            <div class="text-white font-bold text-sm">0.05ms</div>
-            <div class="text-[11px] text-gray-400 mt-0.5">Killswitch Trip</div>
+            <div class="text-white font-mono font-bold text-base">0.05ms</div>
+            <div class="text-[11px] text-gray-400 mt-1">Killswitch Trip</div>
           </div>
           <div>
-            <div class="text-cyan font-bold text-sm">AES-256-GCM</div>
-            <div class="text-[11px] text-gray-400 mt-0.5">Sealed Session Vault</div>
+            <div class="text-white font-mono font-bold text-base">AES-256-GCM</div>
+            <div class="text-[11px] text-gray-400 mt-1">Sealed Session Vault</div>
           </div>
           <div>
-            <div class="text-emerald-400 font-bold text-sm">Zero-Leak</div>
-            <div class="text-[11px] text-gray-400 mt-0.5">Hard Tunnel Isolation</div>
+            <div class="text-telemetry-emerald font-mono font-bold text-base">Zero-Leak</div>
+            <div class="text-[11px] text-gray-400 mt-1">Clean Tunnel Egress</div>
           </div>
         </div>
       </div>
 
-      <!-- Interactive Desktop App Simulation Preview -->
-      <div class="lg:col-span-6" data-aos="fade-left" data-aos-duration="800">
-        <div class="relative glass-card rounded-2xl overflow-hidden border border-white/15 shadow-2xl">
-          <!-- Dispatch Window Header Bar -->
-          <div class="h-11 bg-[#090D18] px-4 flex items-center justify-between border-b border-white/10 select-none">
+      <!-- Hero Right: Interactive Product Console (Showpiece) -->
+      <div class="lg:col-span-6" data-aos="fade-left" data-aos-duration="700">
+        <div class="arch-card rounded-2xl overflow-hidden border border-white/15 shadow-2xl relative">
+          
+          <!-- Dispatch Console Window Header Bar -->
+          <div class="h-11 bg-[#090D15] px-4 flex items-center justify-between border-b border-white/10 select-none">
             <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#EF4444]"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
-              <div class="h-3 w-px bg-white/10 mx-1"></div>
-              <span class="font-display font-extrabold text-xs text-white tracking-wider">ZONIX</span>
-              <span class="text-[10px] font-mono px-1.5 py-0.5 bg-blue-500/20 text-cyan rounded border border-blue-500/30">GATEWAY</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-telemetry-rose"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-telemetry-amber"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-telemetry-emerald"></span>
+              <div class="h-3 w-px bg-white/15 mx-1"></div>
+              <span class="font-display font-bold text-xs text-white tracking-wide">ZONIX DISPATCH CONSOLE</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 bg-white/5 text-gray-300 rounded border border-white/10">STABLE</span>
             </div>
 
-            <!-- Simulated Header Telemetry Badges (Sanitized - No Raw IP/Host) -->
+            <!-- Header Telemetry Badges -->
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-telemetry-emeraldSubtle border border-telemetry-emerald/30 text-telemetry-emerald flex items-center gap-1.5">
                 <i data-lucide="shield-check" class="w-3 h-3"></i> TARGET: ONE.DAT.COM
               </span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-cyan flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 beacon-active"></span> ROUTE: SECURE TUNNEL
-              </span>
               <span class="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-300">
-                OPERATOR: DISPATCH_01
+                ACTIVE OPERATORS: 4
               </span>
             </div>
           </div>
 
-          <!-- Multi-Tab Navigation Bar -->
-          <div class="h-9 bg-[#0B0F19] px-3 flex items-center gap-1 border-b border-white/5 text-xs font-mono">
-            <button class="px-3 py-1 bg-[#141A2D] text-white rounded-t border-t-2 border-cyan font-semibold flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> DAT One · Seat 01
+          <!-- Console Mode Switcher Tabs -->
+          <div class="h-10 bg-[#0B0F19] px-3 flex items-center gap-1 border-b border-white/10 text-xs font-mono select-none">
+            <button id="tab-btn-loadboard" onclick="switchConsoleView('loadboard')" class="px-3.5 py-1.5 bg-[#141B2B] text-white rounded-t border-t-2 border-accent font-medium flex items-center gap-1.5 transition">
+              <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span> Live Freight Stream
             </button>
-            <button class="px-3 py-1 text-gray-400 hover:text-white rounded-t flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Truckstop Pro
+            <button id="tab-btn-admin" onclick="switchConsoleView('admin')" class="px-3.5 py-1.5 text-gray-400 hover:text-white rounded-t flex items-center gap-1.5 transition">
+              <i data-lucide="users" class="w-3 h-3"></i> Admin Roster (4 Seats)
             </button>
-            <button class="px-3 py-1 text-gray-400 hover:text-white rounded-t flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> 123Loadboard
+            <button id="tab-btn-killswitch" onclick="switchConsoleView('killswitch')" class="px-3.5 py-1.5 text-gray-400 hover:text-white rounded-t flex items-center gap-1.5 transition">
+              <i data-lucide="shield-alert" class="w-3 h-3"></i> Killswitch Sandbox
             </button>
-            <span class="ml-auto text-[10px] text-gray-500">1 / 5 Allowed Seats</span>
           </div>
 
-          <!-- Simulated Live Loadboard Stream -->
-          <div class="p-4 bg-[#080B14] space-y-2.5 font-sans">
+          <!-- Console View 1: Live Freight Stream -->
+          <div id="view-loadboard" class="p-4 bg-[#080B12] space-y-3 font-sans">
             <div class="flex items-center justify-between text-xs font-mono text-gray-400 pb-2 border-b border-white/5">
-              <span>LIVE FREIGHT STREAM · SEARCH: CHICAGO, IL → ATLANTA, GA</span>
-              <span class="text-emerald-400 flex items-center gap-1">● HARDWARE SHIELD LOCKED</span>
+              <span>LIVE FREIGHT QUERY · CHICAGO, IL → ATLANTA, GA</span>
+              <span class="text-telemetry-emerald flex items-center gap-1">● HARDWARE SHIELD LOCKED</span>
             </div>
 
             <!-- Simulated Freight Items -->
-            <div class="glass rounded-xl p-3 flex items-center justify-between hover:border-cyan/40 transition">
+            <div class="arch-panel rounded-xl p-3 flex items-center justify-between hover:border-white/20 transition">
               <div>
                 <div class="text-xs font-bold text-white flex items-center gap-2">
-                  <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">$3,450</span>
-                  53' Van · 44,000 lbs · Spot Match
+                  <span class="px-1.5 py-0.5 rounded bg-telemetry-emeraldSubtle text-telemetry-emerald text-[11px] font-mono font-bold">$3,450</span>
+                  53' Dry Van · 44,000 lbs · Spot Match
                 </div>
-                <div class="text-[11px] text-gray-400 mt-1">Chicago, IL → Atlanta, GA · 716 mi ($4.81/mi) · Verified Broker</div>
+                <div class="text-[11px] text-gray-400 mt-1 font-sans">Chicago, IL → Atlanta, GA · 716 mi ($4.81/mi) · Verified Logistics Broker</div>
               </div>
-              <button class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
+              <button onclick="simulateBookLoad(this)" class="px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs font-semibold transition shrink-0">
                 Book Load
               </button>
             </div>
 
-            <div class="glass rounded-xl p-3 flex items-center justify-between hover:border-cyan/40 transition">
+            <div class="arch-panel rounded-xl p-3 flex items-center justify-between hover:border-white/20 transition">
               <div>
                 <div class="text-xs font-bold text-white flex items-center gap-2">
-                  <span class="px-1.5 py-0.5 rounded bg-cyan/20 text-cyan text-[10px] font-mono font-bold">$3,800</span>
-                  Reefer · 42,500 lbs · Immediate Pickup
+                  <span class="px-1.5 py-0.5 rounded bg-white/10 text-white text-[11px] font-mono font-bold">$3,800</span>
+                  Reefer 53' · 42,500 lbs · Immediate Pickup
                 </div>
-                <div class="text-[11px] text-gray-400 mt-1">Gary, IN → Nashville, TN · 465 mi ($8.17/mi) · QuickPay 1-Day</div>
+                <div class="text-[11px] text-gray-400 mt-1 font-sans">Gary, IN → Nashville, TN · 465 mi ($8.17/mi) · QuickPay 24-Hour</div>
               </div>
-              <button class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
+              <button onclick="simulateBookLoad(this)" class="px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs font-semibold transition shrink-0">
                 Book Load
               </button>
             </div>
 
-            <!-- Interactive Simulator Trigger Buttons -->
-            <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-              <span class="text-gray-400">Interactive Simulation:</span>
-              <div class="flex gap-2">
-                <button id="btn-demo-sync" onclick="simulateSessionSync()" class="px-2.5 py-1 rounded bg-cyan/10 hover:bg-cyan/20 text-cyan border border-cyan/30 transition">
-                  ⚡ Hot-Swap Token
-                </button>
-                <button id="btn-demo-kill" onclick="simulateKillswitch()" class="px-2.5 py-1 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition">
-                  🛡️ Test Killswitch
-                </button>
-              </div>
+            <!-- Live Status Trigger -->
+            <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+              <span class="text-gray-400">Partitioned Tunnel Route:</span>
+              <span class="text-telemetry-emerald font-semibold">100% NOMINAL · 28ms</span>
             </div>
-
-            <!-- Simulation Banner -->
-            <div id="sim-status-banner" class="hidden rounded-lg p-2.5 text-xs font-mono text-center"></div>
           </div>
+
+          <!-- Console View 2: Admin Roster & Multi-Seat Control -->
+          <div id="view-admin" class="hidden p-4 bg-[#080B12] space-y-2.5 font-sans">
+            <div class="flex items-center justify-between text-xs font-mono text-gray-400 pb-2 border-b border-white/5">
+              <span>ADMIN SEAT DIRECTORY · 4 / 5 SEATS MOUNTED</span>
+              <button onclick="simulateSyncAll()" class="text-accent-light hover:underline text-xs flex items-center gap-1 font-mono">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync All Tokens
+              </button>
+            </div>
+
+            <!-- Seat 01 -->
+            <div class="arch-panel rounded-xl p-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-telemetry-emerald"></span>
+                <div>
+                  <div class="text-xs font-semibold text-white">Operator 01 · Dispatch Lead</div>
+                  <div class="text-[10px] text-gray-400 font-mono">Tunnel: US-Central (ORD) · Active 3h 12m</div>
+                </div>
+              </div>
+              <button onclick="simulateRevoke(this, 'Operator 01')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-telemetry-rose/20 text-gray-300 hover:text-telemetry-rose text-[11px] font-mono transition">
+                Revoke Seat
+              </button>
+            </div>
+
+            <!-- Seat 02 -->
+            <div class="arch-panel rounded-xl p-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-telemetry-emerald"></span>
+                <div>
+                  <div class="text-xs font-semibold text-white">Operator 02 · Midwest Desk</div>
+                  <div class="text-[10px] text-gray-400 font-mono">Tunnel: US-Central (ORD) · Active 1h 45m</div>
+                </div>
+              </div>
+              <button onclick="simulateRevoke(this, 'Operator 02')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-telemetry-rose/20 text-gray-300 hover:text-telemetry-rose text-[11px] font-mono transition">
+                Revoke Seat
+              </button>
+            </div>
+
+            <!-- Seat 03 -->
+            <div class="arch-panel rounded-xl p-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-telemetry-emerald"></span>
+                <div>
+                  <div class="text-xs font-semibold text-white">Operator 03 · Southeast Desk</div>
+                  <div class="text-[10px] text-gray-400 font-mono">Tunnel: US-East (ATL) · Active 42m</div>
+                </div>
+              </div>
+              <button onclick="simulateRevoke(this, 'Operator 03')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-telemetry-rose/20 text-gray-300 hover:text-telemetry-rose text-[11px] font-mono transition">
+                Revoke Seat
+              </button>
+            </div>
+          </div>
+
+          <!-- Console View 3: Killswitch Sandbox -->
+          <div id="view-killswitch" class="hidden p-4 bg-[#080B12] space-y-4 font-sans text-center">
+            <div class="p-4 rounded-xl arch-panel text-left">
+              <div class="text-xs font-bold text-white mb-1">Interactive Zero-Leak Trap Simulation</div>
+              <div class="text-xs text-gray-400 leading-relaxed font-sans">
+                Test what occurs when an operator's residential proxy tunnel drops. Standard browsers fall back to local ISP and leak your home IP to DAT within milliseconds. ZONIX clamps the socket in 0.05ms to prevent detection.
+              </div>
+            </div>
+
+            <div class="flex justify-center gap-3">
+              <button id="btn-trigger-kill" onclick="simulateKillswitchTest()" class="btn-command rounded-xl px-4 py-2 text-xs font-semibold inline-flex items-center gap-2">
+                <i data-lucide="zap-off" class="w-3.5 h-3.5"></i> Simulate Egress Drop
+              </button>
+              <button onclick="resetKillswitchTest()" class="btn-ghost-panel rounded-xl px-4 py-2 text-xs font-semibold">
+                Reset Tunnel
+              </button>
+            </div>
+
+            <div id="killswitch-alert" class="hidden p-3 rounded-xl bg-telemetry-emeraldSubtle border border-telemetry-emerald/30 text-telemetry-emerald text-xs font-mono text-center">
+              ✓ KILLSWITCH TRIPPED (0.05ms): Socket blackholed. Zero home IP packet emitted. Backup tunnel standing by.
+            </div>
+          </div>
+
         </div>
       </div>
+
     </div>
 
-    <!-- Live Performance Metrics Ticker -->
-    <div class="mt-16 glass rounded-2xl p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 border border-white/10 shadow-xl">
-      <div class="text-center">
+    <!-- Live Performance Metrics Strip -->
+    <div class="mt-16 arch-panel rounded-2xl p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 border border-white/10 shadow-xl">
+      <div class="text-left sm:text-center border-r border-white/5 last:border-0">
         <div class="font-display text-3xl sm:text-4xl font-extrabold text-white" data-counter data-target="28400">0</div>
-        <div class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-mono">Active Synced Sessions</div>
+        <div class="text-xs text-gray-400 mt-1 font-sans">Active Synced Sessions</div>
       </div>
-      <div class="text-center">
-        <div class="font-display text-3xl sm:text-4xl font-extrabold text-cyan" data-counter data-target="99.99" data-decimals="2">0</div>
-        <div class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-mono">Tunnel Uptime SLA %</div>
+      <div class="text-left sm:text-center border-r border-white/5 last:border-0">
+        <div class="font-display text-3xl sm:text-4xl font-extrabold text-accent-light" data-counter data-target="99.99" data-decimals="2">0</div>
+        <div class="text-xs text-gray-400 mt-1 font-sans">Tunnel Uptime SLA %</div>
       </div>
-      <div class="text-center">
+      <div class="text-left sm:text-center border-r border-white/5 last:border-0">
         <div class="font-display text-3xl sm:text-4xl font-extrabold text-white" data-counter data-target="420">0</div>
-        <div class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-mono">Fleets Protected</div>
+        <div class="text-xs text-gray-400 mt-1 font-sans">Fleets Protected</div>
       </div>
-      <div class="text-center">
-        <div class="font-display text-3xl sm:text-4xl font-extrabold text-emerald-400">0</div>
-        <div class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-mono">Credentials Leaked</div>
+      <div class="text-left sm:text-center">
+        <div class="font-display text-3xl sm:text-4xl font-extrabold text-telemetry-emerald">0</div>
+        <div class="text-xs text-gray-400 mt-1 font-sans">Credential Leaks Recorded</div>
       </div>
     </div>
+
   </div>
 </section>
 
 <!-- DAT FLEET DEPLOYMENT OPTIONS: BYO DAT OR BUY MANAGED DAT -->
-<section id="dat-options" class="relative py-24 bg-[#05070E] border-t border-white/10 overflow-hidden">
-  <!-- Subtle ambient glow -->
-  <div class="absolute w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[120px] -top-40 -right-40 pointer-events-none"></div>
-  <div class="absolute w-[500px] h-[500px] rounded-full bg-cyan/10 blur-[100px] -bottom-20 -left-20 pointer-events-none"></div>
+<section id="dat-options" class="relative py-24 bg-[#090D15] border-t border-white/5 overflow-hidden">
+  <div class="spotlight-subtle -top-20 -right-20"></div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16" data-aos="fade-up">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-mono text-cyan mb-4 border border-cyan/30">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan beacon-active"></span>
-        FLEXIBLE LOADBOARD ACCESS INFRASTRUCTURE
+    <div class="max-w-3xl mb-16" data-aos="fade-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full arch-panel text-xs text-accent-light mb-4 border border-white/10">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent beacon-dot"></span>
+        Flexible Deployment Options
       </div>
-      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-        Two Ways to Power Your Dispatch Fleet.
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tightest">
+        Two ways to power your dispatch fleet.
       </h2>
-      <p class="mt-4 text-base text-gray-300 leading-relaxed">
-        Whether you already own a DAT subscription or need fresh, enterprise-grade access today—ZONIX delivers a <strong class="text-white">100% suspension-proof</strong> environment with <strong class="text-cyan">complete administrative control</strong>.
+      <p class="mt-4 text-base text-gray-300 leading-relaxed font-normal">
+        Whether you already own a DAT subscription or need fresh, enterprise-grade access today — ZONIX delivers a <strong class="text-white">100% suspension-proof</strong> environment with <strong class="text-white">complete administrative control</strong>.
       </p>
     </div>
 
-    <!-- Dual Cards Grid -->
-    <div class="grid lg:grid-cols-2 gap-8 items-stretch">
+    <!-- Dual Bento Cards Grid -->
+    <div class="grid lg:grid-cols-12 gap-8 items-stretch">
       
-      <!-- CARD 1: RUN YOUR OWN DAT (WITH FULL ADMIN CONTROL) -->
-      <div class="glass-card rounded-3xl p-8 sm:p-10 border border-white/15 relative flex flex-col justify-between hover:border-cyan/50 transition group" data-aos="fade-right">
+      <!-- CARD 1: RUN YOUR OWN DAT (7 Columns) -->
+      <div class="lg:col-span-7 arch-card rounded-2xl p-8 sm:p-10 border border-white/10 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="100">
         <div>
-          <!-- Card Header & Badge -->
+          <!-- Header & Badge -->
           <div class="flex items-center justify-between gap-4 mb-6">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan/10 text-cyan border border-cyan/30">
-              BRING YOUR OWN DAT (BYO)
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-200 border border-white/10">
+              Bring Your Own DAT (BYO)
             </span>
-            <span class="text-xs font-mono text-emerald-400 flex items-center gap-1.5">
-              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> ZERO BAN RISK
+            <span class="text-xs text-telemetry-emerald flex items-center gap-1.5 font-medium">
+              <i data-lucide="shield-check" class="w-4 h-4"></i> Zero Multi-Login Risk
             </span>
           </div>
 
-          <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-            Run Your Own DAT in ZONIX<br>
-            <span class="text-gradient-cyan">With Full Admin Control</span>
+          <h3 class="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Run your existing DAT account with full master admin control.
           </h3>
 
-          <p class="mt-3 text-sm text-gray-300 leading-relaxed">
-            Mount your existing DAT One or DAT Power account into ZONIX with <strong>100% full administrative authority</strong>. Share access across your entire dispatch roster without ever sharing passwords, risking multi-login flags, or facing account suspensions.
+          <p class="mt-4 text-sm text-gray-300 leading-relaxed">
+            Mount your existing DAT One or DAT Power subscription into ZONIX with <strong>100% administrative authority</strong>. Share access across your entire dispatch roster without ever revealing passwords, risking multi-login flags, or facing account suspensions.
           </p>
 
           <!-- Feature Matrix -->
-          <div class="mt-8 space-y-3.5 text-xs text-gray-200">
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-              <div class="w-7 h-7 rounded-lg bg-cyan/15 text-cyan flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="crown" class="w-4 h-4"></i>
+          <div class="mt-8 space-y-3 text-xs text-gray-300">
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-accent-subtle text-accent-light flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="shield" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">100% Full Admin Authority</strong>
-                <span>You retain sole ownership of your master account. Add, pause, or remove dispatcher seats instantly in one click from your control portal.</span>
+                <strong class="text-white text-sm block font-semibold">100% Full Admin Authority</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">You retain sole ownership of your master account. Add, pause, or remove dispatcher seats instantly in one click from your control portal.</span>
               </div>
             </div>
 
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-              <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-telemetry-emeraldSubtle text-telemetry-emerald flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="fingerprint" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">Zero Account Block &amp; Suspension Protection</strong>
-                <span>Hardware fingerprint cloning (WebGL, Canvas, Audio, Screen) + dedicated sticky residential IP routing ensures DAT sees a single consistent device.</span>
+                <strong class="text-white text-sm block font-semibold">Hardware Fingerprint Cloning</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">Canvas, WebGL vendor, AudioContext, and Screen metrics are replicated exactly so DAT algorithms detect a single consistent physical workstation.</span>
               </div>
             </div>
 
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-              <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg bg-white/5 text-gray-200 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="key-round" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">Zero Password Exposure to Staff</strong>
-                <span>Dispatchers log in via cryptographically sealed tokens. They never see your DAT password, email, or 2FA authentication prompts.</span>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-              <div class="w-7 h-7 rounded-lg bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="activity" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <strong class="text-white text-sm block">Live Session Audit &amp; Remote Killswitch</strong>
-                <span>Monitor active operator telemetry in real time. Instantly terminate access the second a dispatcher leaves your fleet.</span>
+                <strong class="text-white text-sm block font-semibold">Zero Password Exposure</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">Operators authenticate via cryptographically sealed tokens. They never see your DAT password, corporate email, or 2FA authentication prompts.</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Card Footer Action -->
+        <!-- Action Area -->
         <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="text-xs font-mono text-gray-400">
-            <span class="text-white font-bold">Ideal for:</span> Existing DAT subscribers, brokerages &amp; carrier dispatch teams.
+          <div class="text-xs text-gray-400">
+            <span class="text-white font-semibold">Designed for:</span> Existing DAT subscribers &amp; growing carrier dispatch agencies.
           </div>
-          <button onclick="openAccessModal('byo')" class="w-full sm:w-auto btn-outline rounded-xl px-5 py-3 text-xs font-bold inline-flex items-center justify-center gap-2 hover:border-cyan text-white hover:text-cyan transition">
-            <i data-lucide="settings" class="w-4 h-4 text-cyan"></i>
+          <button onclick="openAccessModal('byo')" class="w-full sm:w-auto btn-ghost-panel rounded-xl px-5 py-3 text-xs font-semibold inline-flex items-center justify-center gap-2 hover:border-accent">
+            <i data-lucide="settings" class="w-4 h-4 text-accent-light"></i>
             Mount Your DAT Account
           </button>
         </div>
       </div>
 
-      <!-- CARD 2: BUY MANAGED DAT ACCOUNT (TURNKEY FLEET ACCESS) -->
-      <div class="glass-card rounded-3xl p-8 sm:p-10 border border-cyan/30 relative flex flex-col justify-between shadow-2xl shadow-blue-900/20 group bg-gradient-to-b from-[#0F162B] to-[#0A0E1C]" data-aos="fade-left">
-        <!-- Glow accent badge -->
-        <div class="absolute -top-3.5 right-8">
-          <span class="px-4 py-1 rounded-full text-[11px] font-mono font-extrabold bg-gradient-to-r from-[#F7DC9E] to-[#E5B869] text-[#07080B] uppercase tracking-wider shadow-lg shadow-cyan/30">
-            ★ INSTANT ONBOARDING
-          </span>
-        </div>
-
+      <!-- CARD 2: BUY MANAGED DAT ACCOUNT (5 Columns) -->
+      <div class="lg:col-span-5 arch-card rounded-2xl p-8 sm:p-10 border border-accent/40 relative flex flex-col justify-between shadow-2xl bg-gradient-to-b from-[#101726] to-[#0A0F1A]" data-aos="fade-up" data-aos-delay="200">
         <div>
-          <!-- Card Header & Badge -->
+          <!-- Header & Badge -->
           <div class="flex items-center justify-between gap-4 mb-6">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-blue-500/20 text-cyan border border-blue-400/40">
-              TURNKEY FLEET ACCESS
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-accent-subtle text-accent-light border border-accent/30">
+              Turnkey Fleet Access
             </span>
-            <span class="text-xs font-mono text-cyan flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-cyan beacon-active"></span> PRE-VERIFIED &amp; READY
+            <span class="text-xs text-telemetry-emerald flex items-center gap-1.5 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald beacon-dot"></span> Pre-Verified
             </span>
           </div>
 
-          <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-            Buy Managed DAT Accounts<br>
-            <span class="text-gradient">Ready-to-Dispatch in Minutes</span>
+          <h3 class="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Buy managed DAT accounts ready to dispatch in minutes.
           </h3>
 
-          <p class="mt-3 text-sm text-gray-300 leading-relaxed">
-            Don't have an active DAT subscription or need extra dedicated capacity right away? We provide <strong>fully verified, enterprise-grade DAT accounts</strong> deployed directly inside your ZONIX client with zero setup friction.
+          <p class="mt-4 text-sm text-gray-300 leading-relaxed">
+            Need dedicated DAT One loadboard capacity immediately? We provide <strong>verified, enterprise-grade DAT accounts</strong> deployed directly into your ZONIX client with zero setup friction.
           </p>
 
           <!-- Feature Matrix -->
-          <div class="mt-8 space-y-3.5 text-xs text-gray-200">
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-cyan/20">
-              <div class="w-7 h-7 rounded-lg bg-cyan/20 text-cyan flex items-center justify-center shrink-0 mt-0.5">
+          <div class="mt-8 space-y-3 text-xs text-gray-300">
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3 border border-white/10">
+              <div class="w-7 h-7 rounded-lg bg-accent-subtle text-accent-light flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="zap" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">Instant Access &amp; Zero Verification Wait</strong>
-                <span>Skip tedious paperwork and verification delays. Receive verified DAT One loadboard access delivered straight into your workspace.</span>
+                <strong class="text-white text-sm block font-semibold">Instant Provisioning</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">Skip lengthy verification delays and paperwork. Access verified DAT One loadboards immediately.</span>
               </div>
             </div>
 
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-cyan/20">
-              <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="globe-2" class="w-4 h-4"></i>
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3 border border-white/10">
+              <div class="w-7 h-7 rounded-lg bg-telemetry-emeraldSubtle text-telemetry-emerald flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="globe" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">Dedicated Clean Residential IP Bound</strong>
-                <span>Every managed account is paired with high-reputation, exclusive US residential proxy pools—zero rate-limiting and zero CAPTCHAs.</span>
+                <strong class="text-white text-sm block font-semibold">Dedicated Residential IP Pool</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">Every account is bound to exclusive US residential proxy pools with zero rate limits and zero CAPTCHAs.</span>
               </div>
             </div>
 
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-cyan/20">
-              <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="users" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <strong class="text-white text-sm block">Multi-Seat Team Scaling</strong>
-                <span>Equip 1 to 20+ dispatchers with concurrent search and post power under a single managed organization structure.</span>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-cyan/20">
-              <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="p-3.5 rounded-xl arch-panel flex items-start gap-3 border border-white/10">
+              <div class="w-7 h-7 rounded-lg bg-white/5 text-gray-200 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="headphones" class="w-4 h-4"></i>
               </div>
               <div>
-                <strong class="text-white text-sm block">24/7 Priority Logistics Desk Support</strong>
-                <span>Direct WhatsApp and emergency session assistance whenever you need routing changes, additional seats, or technical support.</span>
+                <strong class="text-white text-sm block font-semibold">24/7 Logistics Helpdesk</strong>
+                <span class="text-gray-400 mt-0.5 block leading-relaxed">Direct WhatsApp assistance whenever you need routing adjustments, additional seats, or technical support.</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Card Footer Action -->
+        <!-- Action Area -->
         <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="text-xs font-mono text-gray-400">
-            <span class="text-white font-bold">Ideal for:</span> New dispatchers, expanding freight agencies &amp; teams needing instant capacity.
+          <div class="text-xs text-gray-400">
+            <span class="text-white font-semibold">Designed for:</span> New dispatchers &amp; teams needing instant capacity.
           </div>
-          <button onclick="openAccessModal('buy')" class="w-full sm:w-auto btn-primary rounded-xl px-6 py-3.5 text-xs font-bold inline-flex items-center justify-center gap-2 shadow-lg shadow-cyan/20">
+          <button onclick="openAccessModal('buy')" class="w-full sm:w-auto btn-command rounded-xl px-5 py-3 text-xs font-semibold inline-flex items-center justify-center gap-2">
             <i data-lucide="shopping-cart" class="w-4 h-4"></i>
             Buy DAT Account Now
           </button>
@@ -592,56 +634,56 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ARCHITECTURE & WORKFLOW SECTION -->
-<section id="architecture" class="relative py-24 bg-[#070A12] border-t border-white/5">
+<!-- ARCHITECTURE & PIPELINE SECTION -->
+<section id="architecture" class="relative py-24 bg-[#07090E] border-t border-white/5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl">
-      <div class="text-cyan text-xs uppercase font-mono tracking-[0.25em] mb-3">Enterprise Multi-Tenant Protocol</div>
-      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-        One Master Authentication.<br><span class="text-gradient">Zero Credential Exposure.</span>
+    <div class="max-w-3xl mb-16">
+      <div class="text-accent-light text-xs font-mono tracking-wider mb-2">Enterprise Multi-Tenant Protocol</div>
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tightest">
+        One master authentication. Zero credential exposure.
       </h2>
       <p class="mt-4 text-gray-300 text-sm sm:text-base leading-relaxed">
-        Eliminate shared passwords on Post-it notes or unprotected remote desktops. ZONIX binds session artifacts directly to client partitions without granting operators access to passwords or 2FA credentials.
+        Eliminate unprotected remote desktops and shared login credentials. ZONIX binds session artifacts directly to sandboxed client partitions without granting operators access to passwords or 2FA credentials.
       </p>
     </div>
 
     <!-- 4 Step Architecture Pillars -->
-    <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="glass-card rounded-2xl p-6 relative">
-        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-cyan mb-4 font-mono font-bold">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="arch-card rounded-2xl p-6 relative">
+        <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white mb-4 font-mono font-bold text-sm">
           01
         </div>
-        <h3 class="font-display font-bold text-lg text-white">Admin Capture</h3>
+        <h3 class="font-display font-bold text-base text-white">Admin Capture</h3>
         <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-          The fleet manager signs into DAT or Truckstop once through the ZONIX Master Shell. 2FA is verified safely on your device.
+          The fleet manager signs into DAT or Truckstop once through the ZONIX Master Shell. 2FA is verified safely on your primary device.
         </p>
       </div>
 
-      <div class="glass-card rounded-2xl p-6 relative">
-        <div class="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center text-cyan mb-4 font-mono font-bold">
+      <div class="arch-card rounded-2xl p-6 relative">
+        <div class="w-9 h-9 rounded-xl bg-accent-subtle border border-accent/20 flex items-center justify-center text-accent-light mb-4 font-mono font-bold text-sm">
           02
         </div>
-        <h3 class="font-display font-bold text-lg text-white">Hardware Sealing</h3>
+        <h3 class="font-display font-bold text-base text-white">Hardware Sealing</h3>
         <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-          Cookies, device tokens, and hardware fingerprint metrics (Canvas, WebGL, Audio) are sealed in an AES-256 encrypted vault.
+          Session tokens and hardware metrics (Canvas, WebGL, AudioContext, Screen) are sealed into an AES-256 encrypted partition.
         </p>
       </div>
 
-      <div class="glass-card rounded-2xl p-6 relative">
-        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4 font-mono font-bold">
+      <div class="arch-card rounded-2xl p-6 relative">
+        <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white mb-4 font-mono font-bold text-sm">
           03
         </div>
-        <h3 class="font-display font-bold text-lg text-white">Tunnel Binding</h3>
+        <h3 class="font-display font-bold text-base text-white">Tunnel Binding</h3>
         <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-          The dispatch session is bound to dedicated sticky proxy nodes. If connection drops, the zero-leak killswitch prevents local IP leak.
+          The session is locked to dedicated sticky residential proxy nodes. If connection drops, the 0.05ms killswitch prevents local IP leak.
         </p>
       </div>
 
-      <div class="glass-card rounded-2xl p-6 relative">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 font-mono font-bold">
+      <div class="arch-card rounded-2xl p-6 relative">
+        <div class="w-9 h-9 rounded-xl bg-telemetry-emeraldSubtle border border-telemetry-emerald/20 flex items-center justify-center text-telemetry-emerald mb-4 font-mono font-bold text-sm">
           04
         </div>
-        <h3 class="font-display font-bold text-lg text-white">Instant Seat Mount</h3>
+        <h3 class="font-display font-bold text-base text-white">Partitioned Mount</h3>
         <p class="text-xs text-gray-400 mt-2 leading-relaxed">
           Dispatchers launch ZONIX on their Windows PC and immediately book freight. Passwords are never seen, shared, or leaked.
         </p>
@@ -650,147 +692,150 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- INTERACTIVE LATENCY & SIMULATOR WIDGET -->
-<section id="simulator" class="relative py-24 bg-grid-cyber">
+<!-- INTERACTIVE EDGE TELEMETRY WIDGET -->
+<section id="simulator" class="relative py-24 bg-[#090D15] border-t border-white/5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid lg:grid-cols-12 gap-12 items-center">
       
       <div class="lg:col-span-5">
-        <div class="text-cyan text-xs uppercase font-mono tracking-[0.25em] mb-3">Live Edge Route Telemetry</div>
-        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">
-          Ultra-Low Latency.<br><span class="text-gradient">Real-Time Egress Health.</span>
+        <div class="text-accent-light text-xs font-mono tracking-wider mb-2">Live Edge Route Telemetry</div>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          Ultra-low latency. Real-time egress health.
         </h2>
-        <p class="mt-4 text-sm text-gray-400 leading-relaxed">
-          Loadboard speed is everything when securing high-paying loads. ZONIX maintains high-speed egress routes with continuous sub-second ping verification and automatic failover.
+        <p class="mt-4 text-sm text-gray-400 leading-relaxed font-sans">
+          Loadboard speed is vital when securing high-paying loads. ZONIX maintains high-speed egress routes with continuous sub-second ping verification and automatic failover.
         </p>
 
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <button onclick="selectEdgeNode('ord', 28, 'US-CENTRAL (CHICAGO)', '100% ROUTE NOMINAL')" id="btn-node-ord" class="w-full text-left p-3 rounded-xl glass border border-cyan/40 bg-cyan/5 flex items-center justify-between transition">
-            <span>ORD · Chicago Hub (DAT Primary)</span>
-            <span class="text-emerald-400 font-bold">28ms · ACTIVE</span>
+        <div class="mt-6 space-y-3 text-xs">
+          <button onclick="selectEdgeNode('ord', 28, 'US-CENTRAL (CHICAGO)', '100% ROUTE NOMINAL')" id="btn-node-ord" class="w-full text-left p-3.5 rounded-xl arch-card border border-accent/40 bg-accent-subtle flex items-center justify-between transition">
+            <span class="font-medium text-white">ORD · Chicago Hub (DAT Primary)</span>
+            <span class="text-telemetry-emerald font-mono font-bold">28ms · ACTIVE</span>
           </button>
-          <button onclick="selectEdgeNode('dfw', 34, 'US-SOUTH (DALLAS)', '100% ROUTE NOMINAL')" id="btn-node-dfw" class="w-full text-left p-3 rounded-xl glass border border-white/10 hover:border-white/20 flex items-center justify-between transition">
-            <span>DFW · Dallas Node (Truckstop Egress)</span>
-            <span class="text-gray-300">34ms · READY</span>
+          <button onclick="selectEdgeNode('dfw', 34, 'US-SOUTH (DALLAS)', '100% ROUTE NOMINAL')" id="btn-node-dfw" class="w-full text-left p-3.5 rounded-xl arch-panel flex items-center justify-between transition">
+            <span class="font-medium text-gray-300">DFW · Dallas Node (Truckstop Egress)</span>
+            <span class="text-gray-400 font-mono">34ms · READY</span>
           </button>
-          <button onclick="selectEdgeNode('atl', 31, 'US-EAST (ATLANTA)', '100% ROUTE NOMINAL')" id="btn-node-atl" class="w-full text-left p-3 rounded-xl glass border border-white/10 hover:border-white/20 flex items-center justify-between transition">
-            <span>ATL · Atlanta Edge (Southeast Hub)</span>
-            <span class="text-gray-300">31ms · READY</span>
+          <button onclick="selectEdgeNode('atl', 31, 'US-EAST (ATLANTA)', '100% ROUTE NOMINAL')" id="btn-node-atl" class="w-full text-left p-3.5 rounded-xl arch-panel flex items-center justify-between transition">
+            <span class="font-medium text-gray-300">ATL · Atlanta Edge (Southeast Hub)</span>
+            <span class="text-gray-400 font-mono">31ms · READY</span>
           </button>
         </div>
       </div>
 
       <div class="lg:col-span-7">
-        <div class="glass-card rounded-2xl p-6 border border-white/10 shadow-2xl">
-          <div class="flex items-center justify-between pb-4 border-b border-white/10 font-mono text-xs">
+        <div class="arch-card rounded-2xl p-6 border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 text-xs font-mono">
             <div>
               <span class="text-gray-400">SELECTED NODE:</span>
-              <span id="active-node-title" class="text-cyan font-bold ml-1.5">US-CENTRAL (CHICAGO)</span>
+              <span id="active-node-title" class="text-white font-bold ml-1.5">US-CENTRAL (CHICAGO)</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 beacon-active"></span>
-              <span id="active-node-status" class="text-emerald-400 font-bold">100% ROUTE NOMINAL</span>
+              <span class="w-2 h-2 rounded-full bg-telemetry-emerald beacon-dot"></span>
+              <span id="active-node-status" class="text-telemetry-emerald font-bold">100% ROUTE NOMINAL</span>
             </div>
           </div>
 
-          <!-- Simulated Live Latency Waveform Graph -->
+          <!-- Live Latency Waveform Graph -->
           <div class="mt-6">
             <div class="flex items-center justify-between text-xs font-mono text-gray-400 mb-2">
               <span>RTT LATENCY STREAM (LAST 60 SECONDS)</span>
-              <span class="text-white"><strong id="active-node-ms" class="text-xl text-cyan">28</strong> ms</span>
+              <span class="text-white"><strong id="active-node-ms" class="text-xl text-accent-light font-mono">28</strong> ms</span>
             </div>
             <div id="interactiveLatencyBars" class="flex items-end gap-1.5 h-32 pt-2"></div>
           </div>
 
           <div class="mt-6 grid grid-cols-3 gap-3 text-xs font-mono">
-            <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-              <span class="text-gray-500 block text-[10px]">PACKET LOSS</span>
-              <span class="text-emerald-400 font-bold text-sm mt-0.5 block">0.00%</span>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+              <span class="text-gray-400 block text-[10px]">PACKET LOSS</span>
+              <span class="text-telemetry-emerald font-bold text-sm mt-0.5 block">0.00%</span>
             </div>
-            <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-              <span class="text-gray-500 block text-[10px]">ENCRYPTION CIPHER</span>
-              <span class="text-cyan font-bold text-sm mt-0.5 block">CHACHA20-POLY1305</span>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+              <span class="text-gray-400 block text-[10px]">ENCRYPTION CIPHER</span>
+              <span class="text-white font-bold text-sm mt-0.5 block">CHACHA20-POLY1305</span>
             </div>
-            <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-              <span class="text-gray-500 block text-[10px]">EGRESS LEAK RISK</span>
-              <span class="text-emerald-400 font-bold text-sm mt-0.5 block">STRICT ZERO</span>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/5">
+              <span class="text-gray-400 block text-[10px]">EGRESS LEAK RISK</span>
+              <span class="text-telemetry-emerald font-bold text-sm mt-0.5 block">STRICT ZERO</span>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
 <!-- INTERACTIVE ROI CALCULATOR -->
-<section id="calculator" class="relative py-24 bg-[#070A12] border-t border-white/5">
+<section id="calculator" class="relative py-24 bg-[#07090E] border-t border-white/5">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-      <div class="text-cyan text-xs uppercase font-mono tracking-[0.25em] mb-3">Enterprise Cost Optimization</div>
-      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">
-        Calculate Your Annual Seat Savings.
+    <div class="max-w-2xl mb-12">
+      <div class="text-accent-light text-xs font-mono tracking-wider mb-2">Enterprise Cost Optimization</div>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">
+        Calculate your annual fleet savings.
       </h2>
-      <p class="mt-3 text-gray-400 text-sm">
-        Loadboards charge $130 - $250/month per seat. See how much your logistics team saves annually with ZONIX Session OS.
+      <p class="mt-3 text-gray-400 text-sm leading-relaxed">
+        Loadboards charge $130 - $250/month per additional seat. See how much your logistics team saves annually with ZONIX Session OS.
       </p>
     </div>
 
-    <div class="glass-card rounded-3xl p-8 sm:p-12 border border-white/15">
+    <div class="arch-card rounded-2xl p-8 sm:p-12 border border-white/10 shadow-2xl">
       <div class="grid md:grid-cols-12 gap-8 items-center">
+        
         <div class="md:col-span-7 space-y-6">
           <div>
-            <div class="flex justify-between items-center text-sm font-semibold mb-2">
-              <span class="text-white">Active Dispatchers on Your Team:</span>
-              <span id="seatCountDisplay" class="font-mono text-cyan text-xl font-bold">8 Seats</span>
+            <div class="flex justify-between items-center text-sm font-semibold mb-3">
+              <span class="text-white font-display text-base">Active Dispatchers on Your Team:</span>
+              <span id="seatCountDisplay" class="font-mono text-accent-light text-xl font-bold">8 Seats</span>
             </div>
             <input type="range" id="seatSlider" min="2" max="30" value="8" oninput="updateROICalculation()">
-            <div class="flex justify-between text-[11px] font-mono text-gray-500 mt-1">
+            <div class="flex justify-between text-[11px] font-mono text-gray-400 mt-2">
               <span>2 Dispatchers</span>
               <span>15 Seats</span>
               <span>30+ Seats</span>
             </div>
           </div>
 
-          <div class="space-y-3 text-xs text-gray-300 font-mono">
-            <div class="flex items-center gap-2">
-              <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> No duplicate subscriptions across dispatch team
+          <div class="space-y-3 text-xs text-gray-300 font-sans">
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="check" class="w-4 h-4 text-telemetry-emerald"></i> No duplicate subscriptions across dispatch staff
             </div>
-            <div class="flex items-center gap-2">
-              <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Zero risk of account bans or multi-IP flag blocks
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="check" class="w-4 h-4 text-telemetry-emerald"></i> Zero risk of multi-IP flag suspensions or ban downtime
             </div>
-            <div class="flex items-center gap-2">
-              <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Instantly revoke access when a dispatcher leaves
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="check" class="w-4 h-4 text-telemetry-emerald"></i> Instantly revoke access when an operator leaves your organization
             </div>
           </div>
         </div>
 
-        <div class="md:col-span-5 bg-gradient-to-br from-[#1A1F2D] to-[#0D1017] rounded-2xl p-6 border border-[#E5B869]/30 text-center">
-          <div class="text-xs uppercase font-mono tracking-wider text-gray-300">Estimated Annual Fleet Savings</div>
-          <div id="savingsDisplay" class="font-display text-4xl sm:text-5xl font-black text-cyan my-3">$14,400</div>
-          <div class="text-xs text-gray-400 leading-relaxed">
-            Based on standard loadboard seat fee of ~$150/user/mo + ban mitigation downtime.
+        <div class="md:col-span-5 arch-panel rounded-2xl p-6 sm:p-8 border border-white/10 text-center bg-gradient-to-br from-[#121826] to-[#0A0D15]">
+          <div class="text-xs uppercase font-mono tracking-wider text-gray-400">Estimated Annual Fleet Savings</div>
+          <div id="savingsDisplay" class="font-display text-4xl sm:text-5xl font-extrabold text-white my-3">$14,400</div>
+          <div class="text-xs text-gray-400 leading-relaxed font-sans">
+            Calculated on standard loadboard seat rate (~$150/user/mo) plus ban mitigation overhead.
           </div>
-          <a href="https://wa.me/14046101615?text=Hello%2C%20I%20want%20to%20set%20up%20ZONIX%20for%20my%20dispatch%20fleet" target="_blank" class="mt-5 w-full btn-primary py-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2">
+          <a href="https://wa.me/14046101615?text=Hello%2C%20I%20want%20to%20set%20up%20ZONIX%20for%20my%20dispatch%20fleet" target="_blank" class="mt-6 w-full btn-command py-3 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2">
             Get Fleet License
           </a>
         </div>
+
       </div>
     </div>
   </div>
 </section>
 
 <!-- ZERO-LEAK SECURITY MATRIX (COMPARISON TABLE) -->
-<section id="security" class="relative py-24 bg-grid-cyber">
+<section id="security" class="relative py-24 bg-[#090D15] border-t border-white/5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-14">
-      <div class="text-cyan text-xs uppercase font-mono tracking-[0.25em] mb-3">Architectural Comparison</div>
-      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
-        Built for Freight. Not Generic Browsing.
+    <div class="max-w-3xl mb-14">
+      <div class="text-accent-light text-xs font-mono tracking-wider mb-2">Architectural Comparison</div>
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tightest">
+        Built specifically for freight. Not generic browsing.
       </h2>
     </div>
 
     <!-- Comparison Table -->
-    <div class="glass-card rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+    <div class="arch-card rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
           <thead>
@@ -798,7 +843,7 @@ tailwind.config = {
               <th class="p-4 sm:px-6">Capability &amp; Security Layer</th>
               <th class="p-4 sm:px-6 text-gray-400">Standard Chrome</th>
               <th class="p-4 sm:px-6 text-gray-400">Generic Anti-Detect</th>
-              <th class="p-4 sm:px-6 text-cyan bg-blue-500/10 font-bold">ZONIX Session OS</th>
+              <th class="p-4 sm:px-6 text-white bg-accent-subtle font-bold">ZONIX Session OS</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5 font-sans">
@@ -807,36 +852,36 @@ tailwind.config = {
                 Multi-User Session Mirroring
                 <div class="text-[11px] text-gray-400 font-normal mt-0.5">Share live login across team without revealing passwords</div>
               </td>
-              <td class="p-4 sm:px-6 text-red-400 font-mono">✕ Manual 2FA / ban</td>
-              <td class="p-4 sm:px-6 text-yellow-400 font-mono">△ Manual JSON export</td>
-              <td class="p-4 sm:px-6 text-emerald-400 font-mono font-bold bg-blue-500/10">✓ 100% Instant Hot-Swap</td>
+              <td class="p-4 sm:px-6 text-telemetry-rose font-mono">✕ Manual 2FA / ban</td>
+              <td class="p-4 sm:px-6 text-telemetry-amber font-mono">△ Manual JSON export</td>
+              <td class="p-4 sm:px-6 text-telemetry-emerald font-mono font-bold bg-accent-subtle">✓ 100% Instant Hot-Swap</td>
             </tr>
             <tr class="hover:bg-white/[0.02] transition">
               <td class="p-4 sm:px-6 font-semibold text-white">
                 Hardware Fingerprint Spoofing
                 <div class="text-[11px] text-gray-400 font-normal mt-0.5">Canvas, WebGL vendor, AudioContext, and Screen resolution</div>
               </td>
-              <td class="p-4 sm:px-6 text-red-400 font-mono">✕ Real device leaked</td>
-              <td class="p-4 sm:px-6 text-yellow-400 font-mono">△ Static profile only</td>
-              <td class="p-4 sm:px-6 text-emerald-400 font-mono font-bold bg-blue-500/10">✓ Deterministic Matching</td>
+              <td class="p-4 sm:px-6 text-telemetry-rose font-mono">✕ Real device leaked</td>
+              <td class="p-4 sm:px-6 text-telemetry-amber font-mono">△ Static profile only</td>
+              <td class="p-4 sm:px-6 text-telemetry-emerald font-mono font-bold bg-accent-subtle">✓ Deterministic Matching</td>
             </tr>
             <tr class="hover:bg-white/[0.02] transition">
               <td class="p-4 sm:px-6 font-semibold text-white">
                 Hard Proxy Killswitch (Zero-Leak)
                 <div class="text-[11px] text-gray-400 font-normal mt-0.5">Instant blackhole if proxy drops to protect home ISP</div>
               </td>
-              <td class="p-4 sm:px-6 text-red-400 font-mono">✕ Falls back to ISP</td>
-              <td class="p-4 sm:px-6 text-yellow-400 font-mono">△ Software toggle</td>
-              <td class="p-4 sm:px-6 text-emerald-400 font-mono font-bold bg-blue-500/10">✓ Hard 0.05ms Trap</td>
+              <td class="p-4 sm:px-6 text-telemetry-rose font-mono">✕ Falls back to ISP</td>
+              <td class="p-4 sm:px-6 text-telemetry-amber font-mono">△ Software toggle</td>
+              <td class="p-4 sm:px-6 text-telemetry-emerald font-mono font-bold bg-accent-subtle">✓ Hard 0.05ms Trap</td>
             </tr>
             <tr class="hover:bg-white/[0.02] transition">
               <td class="p-4 sm:px-6 font-semibold text-white">
                 Sanitized Operator View
                 <div class="text-[11px] text-gray-400 font-normal mt-0.5">Hides raw proxy IPs and credentials from staff</div>
               </td>
-              <td class="p-4 sm:px-6 text-red-400 font-mono">✕ Passwords exposed</td>
-              <td class="p-4 sm:px-6 text-red-400 font-mono">✕ Proxy IPs exposed</td>
-              <td class="p-4 sm:px-6 text-emerald-400 font-mono font-bold bg-blue-500/10">✓ Fully Obfuscated &amp; Locked</td>
+              <td class="p-4 sm:px-6 text-telemetry-rose font-mono">✕ Passwords exposed</td>
+              <td class="p-4 sm:px-6 text-telemetry-rose font-mono">✕ Proxy IPs exposed</td>
+              <td class="p-4 sm:px-6 text-telemetry-emerald font-mono font-bold bg-accent-subtle">✓ Fully Obfuscated &amp; Locked</td>
             </tr>
           </tbody>
         </table>
@@ -846,15 +891,15 @@ tailwind.config = {
 </section>
 
 <!-- FREQUENTLY ASKED QUESTIONS -->
-<section id="faq" class="relative py-24 bg-[#070A12] border-t border-white/5">
+<section id="faq" class="relative py-24 bg-[#07090E] border-t border-white/5">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <div class="text-cyan text-xs uppercase font-mono tracking-[0.25em] mb-3">Questions &amp; Knowledge Base</div>
-      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">Answers Before You Onboard.</h2>
+    <div class="text-left mb-12">
+      <div class="text-accent-light text-xs font-mono tracking-wider mb-2">Questions &amp; Knowledge Base</div>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Answers before you onboard.</h2>
     </div>
 
-    <div class="space-y-3.5">
-      <details class="glass-card rounded-xl p-5 group transition" open>
+    <div class="space-y-3">
+      <details class="arch-card rounded-xl p-5 group transition" open>
         <summary class="flex items-center justify-between cursor-pointer list-none">
           <span class="font-semibold text-white text-sm sm:text-base">Can I run my existing DAT account in ZONIX with full admin control?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
@@ -864,7 +909,7 @@ tailwind.config = {
         </p>
       </details>
 
-      <details class="glass-card rounded-xl p-5 group transition">
+      <details class="arch-card rounded-xl p-5 group transition">
         <summary class="flex items-center justify-between cursor-pointer list-none">
           <span class="font-semibold text-white text-sm sm:text-base">Can I buy a DAT account directly from ZONIX?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
@@ -874,7 +919,7 @@ tailwind.config = {
         </p>
       </details>
 
-      <details class="glass-card rounded-xl p-5 group transition">
+      <details class="arch-card rounded-xl p-5 group transition">
         <summary class="flex items-center justify-between cursor-pointer list-none">
           <span class="font-semibold text-white text-sm sm:text-base">Does ZONIX prevent DAT One and Truckstop account bans?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
@@ -884,7 +929,7 @@ tailwind.config = {
         </p>
       </details>
 
-      <details class="glass-card rounded-xl p-5 group transition">
+      <details class="arch-card rounded-xl p-5 group transition">
         <summary class="flex items-center justify-between cursor-pointer list-none">
           <span class="font-semibold text-white text-sm sm:text-base">Do my dispatchers see my passwords or loadboard logins?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
@@ -894,9 +939,9 @@ tailwind.config = {
         </p>
       </details>
 
-      <details class="glass-card rounded-xl p-5 group transition">
+      <details class="arch-card rounded-xl p-5 group transition">
         <summary class="flex items-center justify-between cursor-pointer list-none">
-          <span class="font-semibold text-white text-sm sm:text-base">What happens if a proxy node goes down during active dispatch?</span>
+          <span class="font-semibold text-white text-sm sm:text-base">What happens if a proxy node drops during active dispatch?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
         </summary>
         <p class="mt-3 text-xs sm:text-sm text-gray-400 leading-relaxed font-sans">
@@ -904,7 +949,7 @@ tailwind.config = {
         </p>
       </details>
 
-      <details class="glass-card rounded-xl p-5 group transition">
+      <details class="arch-card rounded-xl p-5 group transition">
         <summary class="flex items-center justify-between cursor-pointer list-none">
           <span class="font-semibold text-white text-sm sm:text-base">How fast can our dispatch fleet get set up?</span>
           <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-gray-400 transition-transform"></i>
@@ -918,53 +963,53 @@ tailwind.config = {
 </section>
 
 <!-- DEDICATED SUPPORT & ACCESS DESK -->
-<section id="support" class="relative py-20 border-t border-white/5 bg-grid-cyber">
+<section id="support" class="relative py-20 border-t border-white/5 bg-[#090D15]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="glass-card rounded-3xl p-8 lg:p-12 relative overflow-hidden border border-cyan/20">
+    <div class="arch-card rounded-2xl p-8 lg:p-12 relative overflow-hidden border border-white/15">
       <div class="grid lg:grid-cols-12 gap-8 items-center">
         <div class="lg:col-span-7 space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-cyan bg-cyan/10 border border-cyan/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan beacon-active"></span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono text-gray-300 arch-panel">
+            <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald beacon-dot"></span>
             24/7 DEDICATED LOGISTICS FLEET DESK
           </div>
-          <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-            Need Guided Onboarding or Proxy Setup?
+          <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tightest">
+            Need guided onboarding or proxy pool setup?
           </h2>
-          <p class="text-gray-300 text-sm leading-relaxed max-w-xl">
+          <p class="text-gray-300 text-sm leading-relaxed max-w-xl font-normal">
             Our engineering team assists freight brokers, dispatch agencies, and carrier fleets with custom proxy pool allocation, session synchronization, and custom loadboard targets.
           </p>
 
           <div class="grid sm:grid-cols-2 gap-4 pt-2">
-            <div class="glass rounded-xl p-4 border border-white/10 flex items-start gap-3">
-              <div class="w-9 h-9 rounded-lg bg-cyan/10 border border-cyan/20 flex items-center justify-center shrink-0">
-                <i data-lucide="mail" class="w-4 h-4 text-cyan"></i>
+            <div class="arch-panel rounded-xl p-4 flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-accent-subtle text-accent-light flex items-center justify-center shrink-0">
+                <i data-lucide="mail" class="w-4 h-4"></i>
               </div>
               <div>
                 <div class="text-[11px] text-gray-400 font-mono uppercase">Official Support Desk</div>
-                <a href="mailto:support.zonix@gmail.com" class="text-xs font-semibold text-white hover:text-cyan transition block mt-0.5 font-mono">support.zonix@gmail.com</a>
-                <div class="text-[10px] text-emerald-400 mt-0.5">⚡ Response: &lt; 2 hours</div>
+                <a href="mailto:support.zonix@gmail.com" class="text-xs font-semibold text-white hover:text-accent-light transition block mt-0.5 font-mono">support.zonix@gmail.com</a>
+                <div class="text-[10px] text-telemetry-emerald mt-0.5">Response: &lt; 2 hours</div>
               </div>
             </div>
 
-            <div class="glass rounded-xl p-4 border border-white/10 flex items-start gap-3">
-              <div class="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
-                <i data-lucide="send" class="w-4 h-4 text-purple-400"></i>
+            <div class="arch-panel rounded-xl p-4 flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-white/5 text-gray-300 flex items-center justify-center shrink-0">
+                <i data-lucide="send" class="w-4 h-4"></i>
               </div>
               <div>
                 <div class="text-[11px] text-gray-400 font-mono uppercase">Invitation Desk</div>
-                <a href="mailto:invites.zonix@gmail.com" class="text-xs font-semibold text-white hover:text-purple-400 transition block mt-0.5 font-mono">invites.zonix@gmail.com</a>
-                <div class="text-[10px] text-purple-400 mt-0.5">✉️ Dispatcher Seating</div>
+                <a href="mailto:invites.zonix@gmail.com" class="text-xs font-semibold text-white hover:text-accent-light transition block mt-0.5 font-mono">invites.zonix@gmail.com</a>
+                <div class="text-[10px] text-gray-400 mt-0.5">Dispatcher Seating</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="lg:col-span-5 flex flex-col items-center lg:items-end gap-3.5">
-          <a href="https://wa.me/14046101615?text=Hello%2C%20I%20need%20support%20with%20ZONIX" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2.5 bg-[#128C7E] hover:bg-[#0E7064] text-white transition shadow-lg shadow-[#128C7E]/30">
+        <div class="lg:col-span-5 flex flex-col items-center lg:items-end gap-3">
+          <a href="https://wa.me/14046101615?text=Hello%2C%20I%20need%20support%20with%20ZONIX" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2.5 bg-[#128C7E] hover:bg-[#0E7064] text-white transition shadow-lg shadow-[#128C7E]/30">
             <i data-lucide="phone-call" class="w-4 h-4"></i>
             WhatsApp Direct Desk (+1 404 610 1615)
           </a>
-          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.30/ZONIX-Dispatcher-Setup-1.9.30.exe" class="w-full sm:w-auto btn-primary px-6 py-3.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2.5">
+          <a href="https://github.com/subhan07idrees-tech/zonix-dispatcher/releases/download/v1.9.22/ZONIX-Dispatcher-Setup-1.9.22.exe" class="w-full sm:w-auto btn-command px-6 py-3.5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2.5">
             <i data-lucide="download" class="w-4 h-4"></i>
             Download App v1.9.30 (.exe)
           </a>
@@ -975,43 +1020,44 @@ tailwind.config = {
 </section>
 
 <!-- FOOTER -->
-<footer class="relative border-t border-white/10 pt-14 pb-10 bg-[#04060A]">
+<footer class="relative border-t border-white/10 pt-14 pb-10 bg-[#05070C]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-4 gap-10">
       <div class="md:col-span-2">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-display font-black text-white text-base">Z</div>
+          <img src="/zonix-logo.png" alt="ZONIX" class="w-7 h-7 rounded-lg object-contain bg-white/5 p-1 border border-white/10" onerror="this.style.display='none';" />
           <div>
-            <div class="font-display font-extrabold text-white text-base leading-none">ZONIX SYSTEMS</div>
+            <div class="font-display font-bold text-white text-base leading-none">ZONIX SYSTEMS</div>
             <div class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1">Multi-Tenant Dispatch OS</div>
           </div>
         </div>
         <p class="mt-4 text-xs text-gray-400 max-w-sm leading-relaxed">
           High-performance session virtualization, anti-detect isolation, and secure loadboard management for enterprise dispatch teams.
         </p>
-        <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-[11px] text-gray-300 font-mono">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-cyan"></i>
+        <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full arch-panel text-[11px] text-gray-300 font-mono">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-telemetry-emerald"></i>
           Tested on Windows 10 &amp; 11 x64 · Stable Release v1.9.30
         </div>
       </div>
 
       <div>
         <div class="text-xs uppercase font-mono tracking-widest text-gray-400 mb-3">Platform</div>
-        <ul class="space-y-2 text-xs text-gray-300 font-medium">
-          <li><a href="#top" class="hover:text-cyan transition">Overview</a></li>
-          <li><a href="#architecture" class="hover:text-cyan transition">Architecture</a></li>
-          <li><a href="#simulator" class="hover:text-cyan transition">Route Diagnostics</a></li>
-          <li><a href="#calculator" class="hover:text-cyan transition">ROI Calculator</a></li>
-          <li><a href="/join.html" class="hover:text-cyan transition">Accept Seat Invite</a></li>
+        <ul class="space-y-2 text-xs text-gray-400 font-medium">
+          <li><a href="#top" class="hover:text-white transition">Overview</a></li>
+          <li><a href="#dat-options" class="hover:text-white transition">DAT Options</a></li>
+          <li><a href="#architecture" class="hover:text-white transition">Architecture</a></li>
+          <li><a href="#simulator" class="hover:text-white transition">Route Diagnostics</a></li>
+          <li><a href="#calculator" class="hover:text-white transition">ROI Calculator</a></li>
+          <li><a href="/join.html" class="hover:text-white transition">Accept Seat Invite</a></li>
         </ul>
       </div>
 
       <div>
         <div class="text-xs uppercase font-mono tracking-widest text-gray-400 mb-3">Direct Support</div>
-        <ul class="space-y-2 text-xs text-gray-300 font-mono">
-          <li><a href="mailto:support.zonix@gmail.com" class="hover:text-cyan transition flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-cyan"></i> support.zonix@gmail.com</a></li>
-          <li><a href="mailto:invites.zonix@gmail.com" class="hover:text-cyan transition flex items-center gap-1.5"><i data-lucide="send" class="w-3.5 h-3.5 text-purple-400"></i> invites.zonix@gmail.com</a></li>
-          <li><a href="https://wa.me/14046101615" target="_blank" class="hover:text-emerald-400 transition flex items-center gap-1.5 text-emerald-400"><i data-lucide="message-square" class="w-3.5 h-3.5"></i> WhatsApp Helpdesk</a></li>
+        <ul class="space-y-2 text-xs text-gray-400 font-mono">
+          <li><a href="mailto:support.zonix@gmail.com" class="hover:text-white transition flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-light"></i> support.zonix@gmail.com</a></li>
+          <li><a href="mailto:invites.zonix@gmail.com" class="hover:text-white transition flex items-center gap-1.5"><i data-lucide="send" class="w-3.5 h-3.5 text-gray-400"></i> invites.zonix@gmail.com</a></li>
+          <li><a href="https://wa.me/14046101615" target="_blank" class="hover:text-telemetry-emerald transition flex items-center gap-1.5 text-telemetry-emerald"><i data-lucide="message-square" class="w-3.5 h-3.5"></i> WhatsApp Helpdesk</a></li>
         </ul>
       </div>
     </div>
@@ -1023,9 +1069,93 @@ tailwind.config = {
   </div>
 </footer>
 
+<!-- INSTANT ACCESS REQUEST MODAL -->
+<div id="access-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
+  <div class="relative w-full max-w-lg arch-card rounded-2xl p-6 sm:p-8 border border-white/20 shadow-2xl bg-[#0B0F19]">
+    <!-- Close Button -->
+    <button onclick="closeAccessModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+
+    <div class="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono text-gray-300 arch-panel w-fit mb-3">
+      <span class="w-1.5 h-1.5 rounded-full bg-accent beacon-dot"></span> INSTANT ACCESS DESK
+    </div>
+
+    <h3 class="font-display text-2xl font-bold text-white tracking-tight" id="modal-title">Get Instant Access to ZONIX</h3>
+    <p class="text-xs text-gray-400 mt-1" id="modal-desc">Select your deployment option to connect directly with our logistics team.</p>
+
+    <form onsubmit="handleAccessSubmit(event)" class="mt-6 space-y-4">
+      <!-- Option Selector -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-gray-400 mb-2">Select Your Requirement</label>
+        <div class="grid grid-cols-2 gap-2.5 text-xs font-medium">
+          <label class="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] cursor-pointer hover:border-white/30 transition flex flex-col gap-1 text-white has-[:checked]:border-accent has-[:checked]:bg-accent-subtle">
+            <input type="radio" name="access_type" value="Buy Managed DAT Account" id="opt-buy" class="sr-only" checked>
+            <span class="font-semibold flex items-center gap-1.5"><i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-accent-light"></i> Buy DAT Account</span>
+            <span class="text-[10px] text-gray-400 font-sans leading-tight">Turnkey pre-verified access</span>
+          </label>
+          <label class="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] cursor-pointer hover:border-white/30 transition flex flex-col gap-1 text-white has-[:checked]:border-accent has-[:checked]:bg-accent-subtle">
+            <input type="radio" name="access_type" value="Run Own DAT (Full Admin Control)" id="opt-byo" class="sr-only">
+            <span class="font-semibold flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-telemetry-emerald"></i> Run My Own DAT</span>
+            <span class="text-[10px] text-gray-400 font-sans leading-tight">Zero-ban + full admin control</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Fleet Size -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-gray-400 mb-1.5">Number of Dispatcher Seats</label>
+        <select id="modal-seats" class="w-full bg-[#0E1322] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-accent">
+          <option value="1 Dispatcher">1 Dispatcher Seat</option>
+          <option value="2-5 Dispatchers" selected>2 - 5 Dispatchers (Small Fleet)</option>
+          <option value="6-15 Dispatchers">6 - 15 Dispatchers (Agency)</option>
+          <option value="16+ Dispatchers">16+ Dispatchers (Enterprise Fleet)</option>
+        </select>
+      </div>
+
+      <!-- Contact Name / Company -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-gray-400 mb-1.5">Your Name or Dispatch Agency</label>
+        <input type="text" id="modal-name" required placeholder="e.g. John Doe / Apex Dispatch LLC" class="w-full bg-[#0E1322] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-accent">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+        <button type="submit" class="flex-1 btn-command rounded-xl py-3 text-xs font-semibold inline-flex items-center justify-center gap-2">
+          <i data-lucide="message-square" class="w-4 h-4"></i> Chat on WhatsApp (Instant)
+        </button>
+        <button type="button" onclick="submitViaEmail()" class="btn-ghost-panel rounded-xl px-4 py-3 text-xs font-semibold inline-flex items-center justify-center gap-2">
+          <i data-lucide="mail" class="w-4 h-4"></i> Email Desk
+        </button>
+      </div>
+      <div class="text-[10px] text-center text-gray-500 font-mono">⚡ Typical WhatsApp response: &lt; 5 minutes</div>
+    </form>
+  </div>
+</div>
+
+<!-- FLOATING LIVE CONTACT DOCK -->
+<aside aria-label="Quick contact desk" class="fixed bottom-5 right-5 z-40 flex items-center gap-2">
+  <div class="arch-panel rounded-full px-3.5 py-2 border border-white/15 bg-[#0B0F19]/90 shadow-2xl flex items-center gap-3 backdrop-blur-xl">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-telemetry-emerald beacon-dot"></span>
+      <span class="text-[11px] font-sans text-gray-300 font-medium hidden sm:inline">24/7 Desk Online</span>
+    </div>
+    <div class="h-3 w-px bg-white/15"></div>
+    <a href="https://wa.me/14046101615?text=Hello%2C%20I%20want%20to%20get%20access%20to%20ZONIX%20(Buy%20DAT%20or%20Run%20My%20Own%20DAT)!" target="_blank" class="text-xs font-semibold text-white hover:text-telemetry-emerald transition flex items-center gap-1.5" title="Chat on WhatsApp">
+      <i data-lucide="message-circle" class="w-4 h-4 text-telemetry-emerald"></i>
+      <span class="hidden md:inline">WhatsApp</span>
+    </a>
+    <div class="h-3 w-px bg-white/15"></div>
+    <button onclick="openAccessModal('general')" class="text-xs font-semibold text-accent-light hover:text-white transition flex items-center gap-1.5">
+      <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+      <span>Get Access</span>
+    </button>
+  </div>
+</aside>
+
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  AOS.init({ duration: 800, once: true, offset: 80 });
+  AOS.init({ duration: 700, once: true, offset: 60 });
   if (window.lucide) lucide.createIcons();
 
   // Sticky nav blur
@@ -1041,7 +1171,7 @@ tailwind.config = {
     const target = parseFloat(el.dataset.target);
     const decimals = parseInt(el.dataset.decimals || '0');
     let cur = 0;
-    const step = target / 50;
+    const step = target / 40;
     const tick = () => {
       cur += step;
       if (cur >= target) {
@@ -1063,13 +1193,72 @@ tailwind.config = {
   }, { threshold: 0.2 });
   counters.forEach(c => obs.observe(c));
 
+  // Console View Mode Switcher
+  function switchConsoleView(mode) {
+    const views = ['loadboard', 'admin', 'killswitch'];
+    views.forEach(v => {
+      const el = document.getElementById(`view-${v}`);
+      const btn = document.getElementById(`tab-btn-${v}`);
+      if (v === mode) {
+        el.classList.remove('hidden');
+        btn.classList.add('bg-[#141B2B]', 'text-white', 'border-t-2', 'border-accent');
+        btn.classList.remove('text-gray-400');
+      } else {
+        el.classList.add('hidden');
+        btn.classList.remove('bg-[#141B2B]', 'text-white', 'border-t-2', 'border-accent');
+        btn.classList.add('text-gray-400');
+      }
+    });
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function simulateBookLoad(btn) {
+    const origText = btn.textContent;
+    btn.textContent = 'Booking...';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Booked ✓';
+      btn.className = 'px-3 py-1.5 rounded-lg bg-telemetry-emeraldSubtle text-telemetry-emerald border border-telemetry-emerald/40 text-xs font-semibold';
+      setTimeout(() => {
+        btn.textContent = origText;
+        btn.className = 'px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs font-semibold transition shrink-0';
+        btn.disabled = false;
+      }, 2500);
+    }, 600);
+  }
+
+  function simulateRevoke(btn, name) {
+    btn.textContent = 'Terminated';
+    btn.className = 'px-2.5 py-1 rounded bg-telemetry-rose/20 text-telemetry-rose text-[11px] font-mono';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Revoke Seat';
+      btn.className = 'px-2.5 py-1 rounded bg-white/5 hover:bg-telemetry-rose/20 text-gray-300 hover:text-telemetry-rose text-[11px] font-mono transition';
+      btn.disabled = false;
+    }, 3000);
+  }
+
+  function simulateSyncAll() {
+    alert('Synchronizing 4 sealed authorization tokens with primary session vault... Completed in 0.08s.');
+  }
+
+  function simulateKillswitchTest() {
+    const alertBox = document.getElementById('killswitch-alert');
+    alertBox.classList.remove('hidden');
+  }
+
+  function resetKillswitchTest() {
+    const alertBox = document.getElementById('killswitch-alert');
+    alertBox.classList.add('hidden');
+  }
+
   // Interactive Edge Node Simulator
   const nodeBarsContainer = document.getElementById('interactiveLatencyBars');
   const barElements = [];
   if (nodeBarsContainer) {
     for (let i = 0; i < 36; i++) {
       const b = document.createElement('div');
-      b.className = 'flex-1 bg-gradient-to-t from-[#C5994A]/25 to-[#E5B869] rounded-t transition-all duration-300';
+      b.className = 'flex-1 bg-gradient-to-t from-accent to-accent-light rounded-t transition-all duration-300';
       b.style.height = `${25 + Math.random() * 55}%`;
       nodeBarsContainer.appendChild(b);
       barElements.push(b);
@@ -1078,7 +1267,7 @@ tailwind.config = {
       barElements.forEach(b => {
         b.style.height = `${20 + Math.random() * 70}%`;
       });
-    }, 1200);
+    }, 1400);
   }
 
   function selectEdgeNode(id, latency, title, status) {
@@ -1089,10 +1278,10 @@ tailwind.config = {
     ['ord', 'dfw', 'atl'].forEach(n => {
       const btn = document.getElementById(`btn-node-${n}`);
       if (n === id) {
-        btn.classList.add('border-cyan/40', 'bg-cyan/5');
+        btn.classList.add('border-accent/40', 'bg-accent-subtle');
         btn.classList.remove('border-white/10');
       } else {
-        btn.classList.remove('border-cyan/40', 'bg-cyan/5');
+        btn.classList.remove('border-accent/40', 'bg-accent-subtle');
         btn.classList.add('border-white/10');
       }
     });
@@ -1102,24 +1291,8 @@ tailwind.config = {
   function updateROICalculation() {
     const seats = parseInt(document.getElementById('seatSlider').value);
     document.getElementById('seatCountDisplay').textContent = `${seats} Seats`;
-    // Approx $150/mo per extra seat savings across loadboard portfolio
     const annualSavings = seats * 150 * 12;
     document.getElementById('savingsDisplay').textContent = `$${annualSavings.toLocaleString()}`;
-  }
-
-  // Interactive Dispatch Demo Simulator
-  function simulateSessionSync() {
-    const banner = document.getElementById('sim-status-banner');
-    banner.className = 'rounded-lg p-2.5 text-xs font-mono text-center bg-cyan/15 border border-cyan/40 text-cyan block animate-pulse';
-    banner.textContent = '⚡ SESSION HOT-SWAP SUCCESS: Cookies refreshed in 0.12s. No DAT re-auth prompted!';
-    setTimeout(() => { banner.classList.add('hidden'); }, 4000);
-  }
-
-  function simulateKillswitch() {
-    const banner = document.getElementById('sim-status-banner');
-    banner.className = 'rounded-lg p-2.5 text-xs font-mono text-center bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 block animate-pulse';
-    banner.textContent = '🛡️ KILLSWITCH TRIPPED (0.05ms): Socket blackholed instantly. Home IP leak 100% prevented.';
-    setTimeout(() => { banner.classList.add('hidden'); }, 4000);
   }
 
   // Instant Access Modal Controllers
@@ -1160,7 +1333,7 @@ tailwind.config = {
     const seats = document.getElementById('modal-seats').value;
     const name = document.getElementById('modal-name').value.trim();
 
-    const msg = `Hello ZONIX Logistics Team! My name is ${name}. I am looking to get access:\nΓÇó Requirement: ${type}\nΓÇó Fleet Capacity: ${seats}\nPlease provide onboarding details and setup assistance.`;
+    const msg = `Hello ZONIX Logistics Team! My name is ${name}. I am looking to get access:\n• Requirement: ${type}\n• Fleet Capacity: ${seats}\nPlease provide onboarding details and setup assistance.`;
     const waUrl = `https://wa.me/14046101615?text=${encodeURIComponent(msg)}`;
     window.open(waUrl, '_blank');
     closeAccessModal();
@@ -1178,88 +1351,5 @@ tailwind.config = {
   }
 </script>
 
-<!-- INSTANT ACCESS REQUEST MODAL -->
-<div id="access-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
-  <div class="relative w-full max-w-lg glass-card rounded-3xl p-6 sm:p-8 border border-cyan/40 shadow-2xl bg-[#080C16]">
-    <!-- Close Button -->
-    <button onclick="closeAccessModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
-      <i data-lucide="x" class="w-4 h-4"></i>
-    </button>
-
-    <div class="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono text-cyan bg-cyan/10 border border-cyan/30 w-fit mb-3">
-      <span class="w-1.5 h-1.5 rounded-full bg-cyan beacon-active"></span> INSTANT ACCESS DESK
-    </div>
-
-    <h3 class="font-display text-2xl font-black text-white" id="modal-title">Get Instant Access to ZONIX</h3>
-    <p class="text-xs text-gray-400 mt-1" id="modal-desc">Select your deployment option to connect directly with our logistics team.</p>
-
-    <form onsubmit="handleAccessSubmit(event)" class="mt-6 space-y-4">
-      <!-- Option Selector -->
-      <div>
-        <label class="block text-xs font-mono uppercase text-gray-400 mb-2">Select Your Requirement</label>
-        <div class="grid grid-cols-2 gap-2.5 text-xs font-medium">
-          <label class="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] cursor-pointer hover:border-cyan/40 transition flex flex-col gap-1 text-white has-[:checked]:border-cyan has-[:checked]:bg-cyan/10">
-            <input type="radio" name="access_type" value="Buy Managed DAT Account" id="opt-buy" class="sr-only" checked>
-            <span class="font-bold flex items-center gap-1.5"><i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-cyan"></i> Buy DAT Account</span>
-            <span class="text-[10px] text-gray-400 font-sans leading-tight">Turnkey pre-verified access</span>
-          </label>
-          <label class="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] cursor-pointer hover:border-cyan/40 transition flex flex-col gap-1 text-white has-[:checked]:border-cyan has-[:checked]:bg-cyan/10">
-            <input type="radio" name="access_type" value="Run Own DAT (Full Admin Control)" id="opt-byo" class="sr-only">
-            <span class="font-bold flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i> Run My Own DAT</span>
-            <span class="text-[10px] text-gray-400 font-sans leading-tight">Zero-ban + full admin control</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Fleet Size -->
-      <div>
-        <label class="block text-xs font-mono uppercase text-gray-400 mb-1.5">Number of Dispatcher Seats</label>
-        <select id="modal-seats" class="w-full bg-[#0D1220] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan">
-          <option value="1 Dispatcher">1 Dispatcher Seat</option>
-          <option value="2-5 Dispatchers" selected>2 - 5 Dispatchers (Small Fleet)</option>
-          <option value="6-15 Dispatchers">6 - 15 Dispatchers (Agency)</option>
-          <option value="16+ Dispatchers">16+ Dispatchers (Enterprise Fleet)</option>
-        </select>
-      </div>
-
-      <!-- Contact Name / Company -->
-      <div>
-        <label class="block text-xs font-mono uppercase text-gray-400 mb-1.5">Your Name or Dispatch Agency</label>
-        <input type="text" id="modal-name" required placeholder="e.g. John Doe / Apex Dispatch LLC" class="w-full bg-[#0D1220] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyan">
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
-        <button type="submit" class="flex-1 btn-primary rounded-xl py-3 text-xs font-bold inline-flex items-center justify-center gap-2 shadow-lg shadow-cyan/20">
-          <i data-lucide="message-square" class="w-4 h-4"></i> Chat on WhatsApp (Instant)
-        </button>
-        <button type="button" onclick="submitViaEmail()" class="btn-outline rounded-xl px-4 py-3 text-xs font-semibold inline-flex items-center justify-center gap-2 hover:border-cyan hover:text-white">
-          <i data-lucide="mail" class="w-4 h-4"></i> Email Desk
-        </button>
-      </div>
-      <div class="text-[10px] text-center text-gray-500 font-mono">⚡ Typical WhatsApp response: &lt; 5 minutes</div>
-    </form>
-  </div>
-</div>
-
-<!-- FLOATING LIVE CONTACT DOCK -->
-<aside aria-label="Quick contact desk" class="fixed bottom-5 right-5 z-40 flex items-center gap-2">
-  <div class="glass rounded-full px-3.5 py-2 border border-emerald-500/30 bg-[#0B0F19]/90 shadow-2xl flex items-center gap-3 backdrop-blur-xl">
-    <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 beacon-active"></span>
-      <span class="text-[11px] font-mono text-gray-300 font-semibold hidden sm:inline">24/7 Desk Online</span>
-    </div>
-    <div class="h-3 w-px bg-white/15"></div>
-    <a href="https://wa.me/14046101615?text=Hello%2C%20I%20want%20to%20get%20access%20to%20ZONIX%20(Buy%20DAT%20or%20Run%20My%20Own%20DAT)!" target="_blank" class="text-xs font-bold text-white hover:text-emerald-400 transition flex items-center gap-1.5" title="Chat on WhatsApp">
-      <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
-      <span class="hidden md:inline">WhatsApp</span>
-    </a>
-    <div class="h-3 w-px bg-white/15"></div>
-    <button onclick="openAccessModal('general')" class="text-xs font-bold text-cyan hover:text-white transition flex items-center gap-1.5">
-      <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan"></i>
-      <span>Get Access</span>
-    </button>
-  </div>
-</aside>
 </body>
 </html>
