@@ -147,9 +147,9 @@ tailwind.config = {
         </div>
 
         <!-- Org Selector Dropdown -->
-        <div id="org-selector-wrapper" class="flex items-center gap-2 bg-black/50 border border-white/10 px-3 py-1.5 rounded-xl">
-          <span class="text-[10px] text-gray-400 font-mono uppercase font-bold hidden xs:inline">ORG:</span>
-          <select id="org-select" class="bg-transparent text-cyan font-bold text-xs outline-none cursor-pointer max-w-[160px] sm:max-w-[220px] truncate"></select>
+        <div id="org-selector-wrapper" class="flex items-center gap-2 bg-gradient-to-r from-cyan/15 to-blue-600/15 border border-cyan/40 px-3 py-1.5 rounded-xl shadow-sm shadow-cyan/10">
+          <span class="text-[11px] text-cyan font-mono uppercase font-black tracking-wide">ORGANIZATION:</span>
+          <select id="org-select" class="bg-gray-900 text-cyan font-black text-xs outline-none cursor-pointer px-2.5 py-1 rounded-lg border border-cyan/30 hover:border-cyan transition"></select>
         </div>
       </div>
 
@@ -655,7 +655,9 @@ tailwind.config = {
         });
 
         if (orgs.length > 0) {
-          selectedOrgId = orgs[0].id;
+          // Prefer real freight organization (like DAT) over empty zonix-system
+          const preferredOrg = orgs.find(o => o.name !== 'zonix-system' && o.displayName !== 'superadmin') || orgs[0];
+          selectedOrgId = preferredOrg.id;
           select.value = selectedOrgId;
           inviteOrgSelect.value = selectedOrgId;
           fetchDashboardData();
